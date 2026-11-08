@@ -31,4 +31,16 @@ public class Lesson {
     public List<Exercise> getExercises() {
         return exercises;
     }
+
+    public List<Word> getWords() {
+        return words;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public String getLevel() {
+        return level;
+    }
 }
