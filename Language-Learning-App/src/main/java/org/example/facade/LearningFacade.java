@@ -15,6 +15,7 @@ import org.example.factory.Exercise;
 import org.example.factory.ExerciseFactory;
 import org.example.observer.ProgressEvent;
 import org.example.observer.ProgressPublisher;
+import org.example.observer.AchievementNotifier;
 import org.example.observer.ReminderService;
 import org.example.observer.StreakTracker;
 import org.example.observer.XpTracker;
@@ -59,6 +60,7 @@ public class LearningFacade {
         this.publisher.attach(new XpTracker());
         this.publisher.attach(new StreakTracker());
         this.publisher.attach(new ReminderService());
+        this.publisher.attach(new AchievementNotifier());
     }
 
     public void setReviewStrategy(ReviewStrategy reviewStrategy) {
