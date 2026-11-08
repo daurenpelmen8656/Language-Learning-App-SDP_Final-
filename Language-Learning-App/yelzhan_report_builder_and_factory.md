@@ -38,83 +38,43 @@ Second, `Lesson` is an aggregator of domain entities. It encapsulates lists of `
 
 The following class diagram illustrates the structure and relationships of the implemented Builder and Factory patterns within the core architecture:
 
-```plantuml
-@startuml Yelzhan_Patterns_UML
-skinparam classAttributeIconSize 0
-skinparam packageStyle rectangle
-
-package "org.example (Core)" {
+```mermaid
+classDiagram
     class Word {
-        - text: String
-        - translation: String
-        + Word(text: String, translation: String)
-        + toString(): String
+        -String text
+        -String translation
+        +toString() String
     }
-}
-
-package "org.example.factory (Factory Pattern)" {
-    interface Exercise <<interface>> {
-        + check(answer: String): boolean
-        + displayTask(): void
+    class Exercise {
+        <<interface>>
+        +check(answer: String) boolean
+        +displayTask()
     }
-
-    class ExerciseFactory <<Factory>> {
-        + {static} create(type: String, prompt: String, expectedAnswer: String): Exercise
+    class ExerciseFactory {
+        +create(type: String, prompt: String, expectedAnswer: String) Exercise$
     }
-
-    class FlashcardExercise implements Exercise {
-        - word: String
-        - expectedTranslation: String
-        + check(answer: String): boolean
-        + displayTask(): void
+    class Lesson {
+        -String title
+        -String level
+        +showLessonPlan()
+        +getExercises() List~Exercise~
     }
-
-    class TranslationExercise implements Exercise {
-        - sentence: String
-        - expectedTranslation: String
-        + check(answer: String): boolean
+    class LessonBuilder {
+        +setTitle(title: String) LessonBuilder
+        +setLevel(level: String) LessonBuilder
+        +addWord(word: Word) LessonBuilder
+        +addExercise(exercise: Exercise) LessonBuilder
+        +build() Lesson
     }
+    class FlashcardExercise
+    class TranslationExercise
+    class QuizExercise
 
-    class QuizExercise implements Exercise {
-        - question: String
-        - correctAnswer: String
-        + check(answer: String): boolean
-    }
-    
-    ExerciseFactory .down.> Exercise : creates >
-}
+    Exercise <|.. FlashcardExercise
+    Exercise <|.. TranslationExercise
+    Exercise <|.. QuizExercise
 
-package "org.example.builder (Builder Pattern)" {
-    class Lesson <<Product>> {
-        - title: String
-        - level: String
-        - words: List<Word>
-        - exercises: List<Exercise>
-        ~ Lesson(...)
-        + showLessonPlan(): void
-        + getExercises(): List<Exercise>
-        + getWords(): List<Word>
-    }
-
-    class LessonBuilder <<Builder>> {
-        - title: String
-        - level: String
-        - words: List<Word>
-        - exercises: List<Exercise>
-        + setTitle(title: String): LessonBuilder
-        + setLevel(level: String): LessonBuilder
-        + addWord(word: Word): LessonBuilder
-        + addExercise(exercise: Exercise): LessonBuilder
-        + build(): Lesson
-    }
-    
-    LessonBuilder .down.> Lesson : builds >
-}
-
-Lesson o-- "0..*" Word : contains
-Lesson o-- "0..*" Exercise : contains
-LessonBuilder o-- "0..*" Word : aggregates
-LessonBuilder o-- "0..*" Exercise : aggregates
-
-@enduml
-```
+    LessonBuilder ..> Lesson : builds
+    Lesson o-- Word : contains
+    Lesson o-- Exercise : contains
+    ExerciseFactory ..> Exercise : creates
