@@ -4,18 +4,19 @@ import org.example.Word;
 import org.example.factory.Exercise;
 import java.util.List;
 
+/** Product of the Builder pattern. Immutable: lists are copied and unmodifiable. */
 public class Lesson {
     private final String title;
     private final String level;
     private final List<Word> words;
     private final List<Exercise> exercises;
 
-    // Конструктор доступен только внутри пакета (для LessonBuilder)
+    // Package-private: only LessonBuilder may create a Lesson
     Lesson(String title, String level, List<Word> words, List<Exercise> exercises) {
         this.title = title;
         this.level = level;
-        this.words = words;
-        this.exercises = exercises;
+        this.words = List.copyOf(words);
+        this.exercises = List.copyOf(exercises);
     }
 
     public void showLessonPlan() {

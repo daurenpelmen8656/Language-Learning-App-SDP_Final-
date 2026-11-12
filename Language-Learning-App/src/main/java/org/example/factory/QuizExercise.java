@@ -1,21 +1,13 @@
 package org.example.factory;
 
-public class QuizExercise implements Exercise {
-    private final String question;
-    private final String correctAnswer;
+public class QuizExercise extends AbstractTextExercise {
 
     public QuizExercise(String question, String correctAnswer) {
-        this.question = question;
-        this.correctAnswer = correctAnswer;
-    }
-
-    @Override
-    public boolean check(String answer) {
-        return correctAnswer.equalsIgnoreCase(answer.trim());
+        super(question, correctAnswer);
     }
 
     @Override
     public void displayTask() {
-        System.out.println("[Quiz] Выберите правильный вариант: " + question);
+        System.out.println("[Quiz] Выберите правильный вариант: " + getPrompt());
     }
 }
