@@ -1,10 +1,13 @@
 package org.example;
 
 import org.example.facade.LearningFacade;
+import org.example.singleton.SessionStorage;
+import org.example.singleton.UserSession;
 import org.example.strategy.LeitnerStrategy;
 import org.example.strategy.SimpleIntervalStrategy;
 import org.example.strategy.Sm2Strategy;
 
+import java.io.IOException;
 import java.util.Scanner;
 
 /**
@@ -18,6 +21,8 @@ public class Main {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
         LearningFacade facade = new LearningFacade();
+        SessionStorage storage = new SessionStorage();
+        loadProgress(storage);
 
         System.out.println("==================================================");
         System.out.println("  Language Learning App (Java) — SDP Final Project");
@@ -47,9 +52,28 @@ public class Main {
                 }
                 default -> System.out.println("Неверный ввод. Пожалуйста, выберите пункт от 0 до 4.");
             }
+            saveProgress(storage); // прогресс сохраняется после каждого действия
         }
 
         scanner.close();
+    }
+
+    private static void loadProgress(SessionStorage storage) {
+        try {
+            if (storage.load(UserSession.getInstance())) {
+                System.out.println("Прогресс загружен из файла " + storage.getFile() + ".");
+            }
+        } catch (IOException e) {
+            System.out.println("Не удалось загрузить прогресс (" + e.getMessage() + "). Начинаем заново.");
+        }
+    }
+
+    private static void saveProgress(SessionStorage storage) {
+        try {
+            storage.save(UserSession.getInstance());
+        } catch (IOException e) {
+            System.out.println("Не удалось сохранить прогресс: " + e.getMessage());
+        }
     }
 
     private static void changeStrategyMenu(Scanner scanner, LearningFacade facade) {

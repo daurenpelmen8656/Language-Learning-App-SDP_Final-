@@ -42,6 +42,25 @@ public class UserSession implements UserProgress {
         resetState();
     }
 
+    /** A consistent copy of the whole state, taken under the lock. */
+    synchronized SessionSnapshot snapshot() {
+        Map<String, WordProgress> copy = new LinkedHashMap<>();
+        progressMap.forEach((word, p) ->
+                copy.put(word, new WordProgress(p.getBox(), p.getConsecutiveCorrect())));
+        return new SessionSnapshot(username, xp, streak, wordsLearned, copy);
+    }
+
+    /** Replaces the whole state with the given snapshot (used when loading from a file). */
+    synchronized void restore(SessionSnapshot snapshot) {
+        this.username = snapshot.username();
+        this.xp = snapshot.xp();
+        this.streak = snapshot.streak();
+        this.wordsLearned = snapshot.wordsLearned();
+        progressMap.clear();
+        snapshot.progress().forEach((word, p) ->
+                progressMap.put(word, new WordProgress(p.getBox(), p.getConsecutiveCorrect())));
+    }
+
     private void resetState() {
         username = DEFAULT_USERNAME;
         xp = 0;
