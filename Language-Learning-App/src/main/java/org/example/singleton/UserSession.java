@@ -5,23 +5,22 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
- * Singleton Pattern — maintains global state for the active user session.
+ * Singleton Pattern — the single, global state of the active user session.
+ * Implements {@link UserProgress}, so clients may depend on the interface.
  */
-public class UserSession {
+public class UserSession implements UserProgress {
+    public static final String DEFAULT_USERNAME = "Guest";
+
     private static volatile UserSession instance;
 
     private String username;
     private int xp;
     private int streak;
     private int wordsLearned;
-    private final Map<String, WordProgress> progressMap;
+    private final Map<String, WordProgress> progressMap = new LinkedHashMap<>();
 
     private UserSession() {
-        this.username = "Dauren";
-        this.xp = 0;
-        this.streak = 0;
-        this.wordsLearned = 0;
-        this.progressMap = new LinkedHashMap<>();
+        resetState();
     }
 
     public static UserSession getInstance() {
@@ -35,47 +34,84 @@ public class UserSession {
         return instance;
     }
 
-    public String getUsername() {
+    /**
+     * Returns the session to its initial state (same instance, empty data).
+     * Intended for tests, so that they do not depend on each other, and for "log out".
+     */
+    public synchronized void reset() {
+        resetState();
+    }
+
+    private void resetState() {
+        username = DEFAULT_USERNAME;
+        xp = 0;
+        streak = 0;
+        wordsLearned = 0;
+        progressMap.clear();
+    }
+
+    @Override
+    public synchronized String getUsername() {
         return username;
     }
 
-    public void setUsername(String username) {
+    @Override
+    public synchronized void setUsername(String username) {
+        if (username == null || username.isBlank()) {
+            throw new IllegalArgumentException("Имя пользователя не может быть пустым");
+        }
         this.username = username;
     }
 
-    public int getXp() {
+    @Override
+    public synchronized int getXp() {
         return xp;
     }
 
-    public void addXp(int amount) {
+    @Override
+    public synchronized void addXp(int amount) {
+        if (amount < 0) {
+            throw new IllegalArgumentException("XP нельзя уменьшить: " + amount);
+        }
         this.xp += amount;
     }
 
-    public int getStreak() {
+    @Override
+    public synchronized int getStreak() {
         return streak;
     }
 
-    public void incrementStreak() {
+    @Override
+    public synchronized void incrementStreak() {
         this.streak++;
     }
 
-    public void resetStreak() {
+    @Override
+    public synchronized void resetStreak() {
         this.streak = 0;
     }
 
-    public int getWordsLearned() {
+    @Override
+    public synchronized int getWordsLearned() {
         return wordsLearned;
     }
 
-    public void incrementWordsLearned() {
+    @Override
+    public synchronized void incrementWordsLearned() {
         this.wordsLearned++;
     }
 
+    @Override
     public synchronized WordProgress getProgress(String wordText) {
+        if (wordText == null || wordText.isBlank()) {
+            throw new IllegalArgumentException("Слово не может быть пустым");
+        }
         return progressMap.computeIfAbsent(wordText.toLowerCase(), k -> new WordProgress());
     }
 
-    public Map<String, WordProgress> getAllProgress() {
-        return Collections.unmodifiableMap(progressMap);
+    /** Read-only snapshot of the progress of all words. */
+    @Override
+    public synchronized Map<String, WordProgress> getAllProgress() {
+        return Collections.unmodifiableMap(new LinkedHashMap<>(progressMap));
     }
 }

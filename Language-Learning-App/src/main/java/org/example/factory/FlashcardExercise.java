@@ -1,21 +1,13 @@
 package org.example.factory;
 
-public class FlashcardExercise implements Exercise {
-    private final String word;
-    private final String expectedTranslation;
+public class FlashcardExercise extends AbstractTextExercise {
 
     public FlashcardExercise(String word, String expectedTranslation) {
-        this.word = word;
-        this.expectedTranslation = expectedTranslation;
-    }
-
-    @Override
-    public boolean check(String answer) {
-        return expectedTranslation.equalsIgnoreCase(answer.trim());
+        super(word, expectedTranslation);
     }
 
     @Override
     public void displayTask() {
-        System.out.println("[Flashcard] Как переводится слово: " + word + "?");
+        System.out.println("[Flashcard] Как переводится слово: " + getPrompt() + "?");
     }
 }

@@ -1,18 +1,22 @@
 package org.example.singleton;
 
 /**
- * Tracks the spaced-repetition progress for a single word.
+ * Spaced-repetition progress of a single word.
+ * The state changes only through {@link #recordAnswer(boolean)},
+ * so box and streak cannot get out of sync (no public setters).
  */
 public class WordProgress {
     private int box;
     private int consecutiveCorrect;
 
     public WordProgress() {
-        this.box = 0;
-        this.consecutiveCorrect = 0;
+        this(0, 0);
     }
 
     public WordProgress(int box, int consecutiveCorrect) {
+        if (box < 0 || consecutiveCorrect < 0) {
+            throw new IllegalArgumentException("box и consecutiveCorrect не могут быть отрицательными");
+        }
         this.box = box;
         this.consecutiveCorrect = consecutiveCorrect;
     }
@@ -21,16 +25,8 @@ public class WordProgress {
         return box;
     }
 
-    public void setBox(int box) {
-        this.box = box;
-    }
-
     public int getConsecutiveCorrect() {
         return consecutiveCorrect;
-    }
-
-    public void setConsecutiveCorrect(int consecutiveCorrect) {
-        this.consecutiveCorrect = consecutiveCorrect;
     }
 
     public void recordAnswer(boolean correct) {
