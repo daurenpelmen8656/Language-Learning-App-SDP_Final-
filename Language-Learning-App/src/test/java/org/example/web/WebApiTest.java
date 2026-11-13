@@ -25,12 +25,16 @@ import java.nio.file.Path;
 import java.time.Clock;
 import java.time.Instant;
 import java.time.ZoneOffset;
+import java.util.List;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class WebApiTest {
+    private static final int EXPECTED_WORD_COUNT = 60;
+    private static final int EXPECTED_TRANSLATION_COUNT_PER_WORD = 3;
+    private static final int QUIZ_POSITION_WITHIN_WORD_EXERCISES = 2;
     @TempDir
     Path temporaryDirectory;
 
@@ -44,6 +48,27 @@ class WebApiTest {
         String encoded = JsonCodec.stringify(Map.of("text", "quote: \" slash: \\ line:\n Kazakh: ә"));
 
         assertEquals("quote: \" slash: \\ line:\n Kazakh: ә", JsonCodec.parseObject(encoded).get("text"));
+    }
+
+    @Test
+    void shouldReturnExpandedVocabularyWithRussianAndKazakh_whenLessonIsRequested() throws Exception {
+        WebApi api = createApi();
+        Map<String, Object> lesson = api.getLesson();
+        List<?> words = (List<?>) lesson.get("words");
+        Map<?, ?> firstWord = (Map<?, ?>) words.getFirst();
+        List<?> exercises = (List<?>) lesson.get("exercises");
+        Map<?, ?> firstQuiz = (Map<?, ?>) exercises.get(QUIZ_POSITION_WITHIN_WORD_EXERCISES);
+        List<?> options = (List<?>) firstQuiz.get("options");
+
+        assertEquals(EXPECTED_WORD_COUNT, words.size());
+        assertEquals(EXPECTED_WORD_COUNT * EXPECTED_TRANSLATION_COUNT_PER_WORD, exercises.size());
+        assertEquals("яблоко", firstWord.get("translation"));
+        assertEquals("алма", firstWord.get("kazakhTranslation"));
+        assertEquals(2, options.size());
+        List<String> patterns = api.getEvents().stream()
+                .map(event -> (String) event.get("pattern"))
+                .toList();
+        assertTrue(patterns.containsAll(List.of("Builder", "Factory", "Adapter", "Decorator", "Facade")));
     }
 
     @Test

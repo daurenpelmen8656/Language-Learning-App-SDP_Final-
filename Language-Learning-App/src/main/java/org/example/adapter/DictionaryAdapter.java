@@ -2,7 +2,9 @@ package org.example.adapter;
 
 import org.example.Word;
 
-/** Adapter that converts the external "word|translation" result into Word. */
+import java.util.List;
+
+/** Adapter that converts a pipe-delimited external entry into Word. */
 public class DictionaryAdapter implements DictionaryService {
     private final ExternalDictionaryApi externalApi;
 
@@ -12,11 +14,22 @@ public class DictionaryAdapter implements DictionaryService {
 
     @Override
     public Word findWord(String key) {
-        String entry = externalApi.getEntry(key);
+        return convertEntry(externalApi.getEntry(key));
+    }
+
+    @Override
+    public List<Word> findAllWords() {
+        return externalApi.getEntries().stream().map(this::convertEntry).toList();
+    }
+
+    private Word convertEntry(String entry) {
         String[] parts = entry.split("\\|", -1);
-        if (parts.length != 2 || parts[0].isBlank() || parts[1].isBlank()) {
+        if ((parts.length != 2 && parts.length != 3)
+                || parts[0].isBlank() || parts[1].isBlank()
+                || (parts.length == 3 && parts[2].isBlank())) {
             throw new IllegalStateException("Invalid dictionary entry: " + entry);
         }
-        return new Word(parts[0].trim(), parts[1].trim());
+        String kazakhTranslation = parts.length == 3 ? parts[2].trim() : parts[1].trim();
+        return new Word(parts[0].trim(), parts[1].trim(), kazakhTranslation, null);
     }
 }

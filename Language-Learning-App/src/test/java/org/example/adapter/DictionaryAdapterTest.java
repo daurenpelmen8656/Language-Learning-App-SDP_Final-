@@ -9,6 +9,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class DictionaryAdapterTest {
+    private static final int EXPECTED_DICTIONARY_WORD_COUNT = 60;
     private final DictionaryService dictionary = new DictionaryAdapter(new ExternalDictionaryApi());
 
     @Test
@@ -22,6 +23,14 @@ class DictionaryAdapterTest {
     @Test
     void lookupIsCaseInsensitive() {
         assertEquals("окно", dictionary.findWord("WINDOW").getTranslation());
+    }
+
+    @Test
+    void includesKazakhTranslationsAndAllDictionaryEntries() {
+        Word apple = dictionary.findWord("apple");
+
+        assertEquals("алма", apple.getKazakhTranslation());
+        assertEquals(EXPECTED_DICTIONARY_WORD_COUNT, dictionary.findAllWords().size());
     }
 
     @Test

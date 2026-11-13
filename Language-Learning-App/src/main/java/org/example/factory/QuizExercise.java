@@ -6,7 +6,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class QuizExercise extends AbstractTextExercise {
-    private static final Pattern OPTION_PATTERN = Pattern.compile("([A-Z])\\)\\s*([^\\s]+)");
+    private static final Pattern OPTION_PATTERN = Pattern.compile("([A-Z])\\)\\s*(.*?)(?=\\s+[A-Z]\\)\\s*|$)");
 
     public QuizExercise(String question, String correctAnswer) {
         super(question, correctAnswer);
@@ -22,7 +22,7 @@ public class QuizExercise extends AbstractTextExercise {
         Matcher matcher = OPTION_PATTERN.matcher(getQuestion());
         List<String> options = new ArrayList<>();
         while (matcher.find()) {
-            options.add(matcher.group(1) + ") " + matcher.group(2));
+            options.add(matcher.group(1) + ") " + matcher.group(2).trim());
         }
         return List.copyOf(options);
     }
