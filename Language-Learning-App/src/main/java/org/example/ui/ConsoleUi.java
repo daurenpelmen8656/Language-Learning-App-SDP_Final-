@@ -63,8 +63,8 @@ public final class ConsoleUi {
         System.out.println("Новые слова:");
         lesson.words().forEach(word -> System.out.println(" - " + word));
         System.out.println("\nКарточки слов:");
-        for (String card : lesson.renderedCards()) {
-            System.out.println(card);
+        for (var card : lesson.cards()) {
+            System.out.println(card.renderedText());
         }
         int exerciseNumber = 0;
         for (Exercise exercise : lesson.exercises()) {
