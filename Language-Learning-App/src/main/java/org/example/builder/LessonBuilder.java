@@ -28,8 +28,18 @@ public class LessonBuilder {
         return this;
     }
 
+    public LessonBuilder addWords(List<Word> words) {
+        Objects.requireNonNull(words, "Список слов не может быть null").forEach(this::addWord);
+        return this;
+    }
+
     public LessonBuilder addExercise(Exercise exercise) {
         this.exercises.add(Objects.requireNonNull(exercise, "Упражнение не может быть null"));
+        return this;
+    }
+
+    public LessonBuilder addExercises(List<Exercise> exercises) {
+        Objects.requireNonNull(exercises, "Список упражнений не может быть null").forEach(this::addExercise);
         return this;
     }
 

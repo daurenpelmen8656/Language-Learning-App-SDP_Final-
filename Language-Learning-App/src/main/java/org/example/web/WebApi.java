@@ -31,6 +31,7 @@ public final class WebApi {
     private static final String FACADE_PATTERN = "Facade";
     private static final String SINGLETON_PATTERN = "Singleton";
     private static final String NEXT_REVIEW_EVENT = "next review in %d days";
+    private static final int MAX_DICTIONARY_EVENT_SAMPLES = 5;
     private final LessonService lessonService;
     private final ReviewService reviewService;
     private final LearningFacade learningFacade;
@@ -125,7 +126,7 @@ public final class WebApi {
                 "renderedText", card.renderedText())).toList();
         List<Map<String, Object>> exercises = java.util.stream.IntStream.range(0, lesson.exercises().size())
                 .mapToObj(index -> exerciseData(lesson.exercises().get(index),
-                        lesson.words().get(index % lesson.words().size())))
+                        lesson.words().get(index / LessonService.EXERCISES_PER_WORD)))
                 .toList();
         Map<String, Object> result = new LinkedHashMap<>();
         result.put("title", lesson.title());
@@ -140,6 +141,7 @@ public final class WebApi {
         Map<String, Object> result = new LinkedHashMap<>();
         result.put("text", word.text());
         result.put("translation", word.translation());
+        result.put("kazakhTranslation", word.kazakhTranslation());
         result.put("level", word.level() == null ? "" : word.level());
         return result;
     }
@@ -156,12 +158,14 @@ public final class WebApi {
 
     private void recordLessonEvents(LessonView lesson) {
         eventLog.record(BUILDER_PATTERN, "lesson built (" + lesson.words().size() + " words)");
-        for (Exercise exercise : lesson.exercises()) {
-            eventLog.record(FACTORY_PATTERN, "created " + exercise.getClass().getSimpleName());
-        }
-        for (WordView word : lesson.words()) {
-            eventLog.record(ADAPTER_PATTERN, "entry " + word.text() + "|" + word.translation() + " -> Word");
-        }
+        lesson.exercises().stream()
+                .map(exercise -> exercise.getClass().getSimpleName())
+                .distinct()
+                .forEach(exerciseType -> eventLog.record(FACTORY_PATTERN, "created " + exerciseType));
+        lesson.words().stream().limit(MAX_DICTIONARY_EVENT_SAMPLES).forEach(word ->
+                eventLog.record(ADAPTER_PATTERN,
+                        "entry " + word.text() + "|" + word.translation() + " -> Word"));
+        eventLog.record(ADAPTER_PATTERN, lesson.words().size() + " dictionary entries loaded");
         for (var card : lesson.cards()) {
             eventLog.record(DECORATOR_PATTERN, "card + " + card.decoration());
         }

@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="ru">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -11,59 +11,60 @@
 <body>
   <main class="page-shell">
     <header class="topbar">
-      <a class="brand" href="/" aria-label="Language Learning App home"><span class="brand-mark">Aa</span><span>Language Learning App</span></a>
-      <div class="score-strip" aria-label="Your learning stats">
-        <span class="score-chip xp-chip">⭐ <b id="xp">0</b><small>XP</small></span>
-        <span class="score-chip streak-chip">🔥 <b id="streak">0</b><small>streak</small></span>
-        <span class="score-chip learned-chip">📚 <b id="learned">0</b><small>learned</small></span>
-        <span class="score-chip due-chip">⏰ <b id="due">0</b><small>due today</small></span>
+      <a class="brand" href="/" aria-label="Language Learning App home" data-i18n-aria="homeLabel"><span class="brand-mark">Aa</span><span>Language Learning App</span></a>
+      <div class="score-strip" aria-label="Your learning stats" data-i18n-aria="statsLabel">
+        <span class="score-chip xp-chip">⭐ <b id="xp">0</b><small data-i18n="xpLabel">XP</small></span>
+        <span class="score-chip streak-chip">🔥 <b id="streak">0</b><small data-i18n="streakLabel">streak</small></span>
+        <span class="score-chip learned-chip">📚 <b id="learned">0</b><small data-i18n="learnedLabel">learned</small></span>
+        <span class="score-chip due-chip">⏰ <b id="due">0</b><small data-i18n="dueLabel">due today</small></span>
       </div>
       <div class="top-controls">
-        <label class="strategy-control" for="strategy-select"><span>🧭</span><select id="strategy-select" aria-label="Review strategy"><option value="leitner">Leitner</option><option value="sm2">SM-2</option><option value="simple">Simple</option></select></label>
-        <details class="decorator-menu"><summary>🎨 Card extras</summary><div class="decorator-toggles"><label><input type="checkbox" data-decoration="Example" checked> Example</label><label><input type="checkbox" data-decoration="Audio" checked> Audio</label><label><input type="checkbox" data-decoration="ImageHint" checked> Image hint</label></div></details>
+        <label class="language-control" for="language-select"><span>🌐</span><select id="language-select" aria-label="Interface language" data-i18n-aria="languageLabel"><option value="ru">Русский</option><option value="en">English</option><option value="kk">Қазақша</option></select></label>
+        <label class="strategy-control" for="strategy-select"><span>🧭</span><select id="strategy-select" aria-label="Review strategy" data-i18n-aria="strategyLabel"><option value="leitner">Leitner</option><option value="sm2">SM-2</option><option value="simple" data-i18n="simpleStrategy">Simple</option></select></label>
+        <details class="decorator-menu"><summary data-i18n="cardExtras">🎨 Card extras</summary><div class="decorator-toggles"><label><input type="checkbox" data-decoration="Example" checked> <span data-i18n="exampleDecoration">Example</span></label><label><input type="checkbox" data-decoration="Audio" checked> <span data-i18n="audioDecoration">Audio</span></label><label><input type="checkbox" data-decoration="ImageHint" checked> <span data-i18n="imageDecoration">Image hint</span></label></div></details>
       </div>
     </header>
 
     <section class="hero">
       <div class="hero-copy">
-        <p class="eyebrow">A LITTLE PLAY GOES A LONG WAY</p>
-        <h1 id="lesson-title">Your next word adventure awaits!</h1>
-        <p>Choose a mini-game, meet a few new words, and collect your stars.</p>
+        <p class="eyebrow" data-i18n="heroEyebrow">A LITTLE PLAY GOES A LONG WAY</p>
+        <h1 id="lesson-title" data-i18n="heroTitle">Your next word adventure awaits!</h1>
+        <p data-i18n="heroDescription">Choose a mini-game, meet a few new words, and collect your stars.</p>
       </div>
-      <div class="hero-mascot" aria-hidden="true"><span>🦉</span><i>hello!</i></div>
+      <div class="hero-mascot" aria-hidden="true"><span>🦉</span><i data-i18n="hello">hello!</i></div>
     </section>
 
     <section class="game-section" aria-labelledby="games-heading">
-      <div class="section-title"><div><p class="eyebrow">PICK YOUR PLAY</p><h2 id="games-heading">Five ways to learn</h2></div><span class="section-doodle" aria-hidden="true">✦</span></div>
+      <div class="section-title"><div><p class="eyebrow" data-i18n="gamesEyebrow">PICK YOUR PLAY</p><h2 id="games-heading" data-i18n="gamesTitle">Five ways to learn</h2></div><span class="section-doodle" aria-hidden="true">✦</span></div>
       <div class="game-grid">
-        <button class="game-tile tile-mint" type="button" data-game="listen-pick"><span class="tile-number">01</span><span class="tile-emoji">🎧</span><strong>Listen & Pick</strong><small>Hear it. Find it.</small><span class="tile-arrow">↗</span></button>
-        <button class="game-tile tile-peach" type="button" data-game="picture-word"><span class="tile-number">02</span><span class="tile-emoji">🖼️</span><strong>Picture → Word</strong><small>Spot the right word.</small><span class="tile-arrow">↗</span></button>
-        <button class="game-tile tile-blue" type="button" data-game="word-picture"><span class="tile-number">03</span><span class="tile-emoji">🧠</span><strong>Word → Picture</strong><small>Match it to a picture.</small><span class="tile-arrow">↗</span></button>
-        <button class="game-tile tile-yellow" type="button" data-game="translation"><span class="tile-number">04</span><span class="tile-emoji">✍️</span><strong>Translation</strong><small>Type what it means.</small><span class="tile-arrow">↗</span></button>
-        <button class="game-tile tile-lilac" type="button" data-game="quiz"><span class="tile-number">05</span><span class="tile-emoji">🎯</span><strong>Quick Quiz</strong><small>Pick the best answer.</small><span class="tile-arrow">↗</span></button>
+        <button class="game-tile tile-mint" type="button" data-game="listen-pick"><span class="tile-number">01</span><span class="tile-emoji">🎧</span><strong data-i18n="listenGame">Listen & Pick</strong><small data-i18n="listenHint">Hear it. Find it.</small><span class="tile-arrow">↗</span></button>
+        <button class="game-tile tile-peach" type="button" data-game="picture-word"><span class="tile-number">02</span><span class="tile-emoji">🖼️</span><strong data-i18n="pictureWordGame">Picture → Word</strong><small data-i18n="pictureWordHint">Spot the right word.</small><span class="tile-arrow">↗</span></button>
+        <button class="game-tile tile-blue" type="button" data-game="word-picture"><span class="tile-number">03</span><span class="tile-emoji">🧠</span><strong data-i18n="wordPictureGame">Word → Picture</strong><small data-i18n="wordPictureHint">Match it to a picture.</small><span class="tile-arrow">↗</span></button>
+        <button class="game-tile tile-yellow" type="button" data-game="translation"><span class="tile-number">04</span><span class="tile-emoji">✍️</span><strong data-i18n="translationGame">Translation</strong><small data-i18n="translationHint">Type what it means.</small><span class="tile-arrow">↗</span></button>
+        <button class="game-tile tile-lilac" type="button" data-game="quiz"><span class="tile-number">05</span><span class="tile-emoji">🎯</span><strong data-i18n="quizGame">Quick Quiz</strong><small data-i18n="quizHint">Pick the best answer.</small><span class="tile-arrow">↗</span></button>
       </div>
     </section>
 
-    <section class="play-layout" aria-label="Selected game and vocabulary">
+    <section class="play-layout" aria-label="Selected game and vocabulary" data-i18n-aria="playLayoutLabel">
       <div class="play-panel panel-card">
-        <div class="panel-heading"><div><p class="eyebrow" id="game-kicker">READY WHEN YOU ARE</p><h2 id="game-title">Pick a game to begin</h2></div><span class="panel-icon" id="game-icon" aria-hidden="true">🎲</span></div>
-        <p class="game-instructions" id="game-instructions">Choose one of the colorful tiles above.</p>
-        <div id="question-area" class="question-area"><div class="empty-question"><span>🌈</span><p>Your next question will pop up here.</p></div></div>
+        <div class="panel-heading"><div><p class="eyebrow" id="game-kicker" data-i18n="ready">READY WHEN YOU ARE</p><h2 id="game-title" data-i18n="pickGame">Pick a game to begin</h2></div><span class="panel-icon" id="game-icon" aria-hidden="true">🎲</span></div>
+        <p class="game-instructions" id="game-instructions" data-i18n="chooseGame">Choose one of the colorful tiles above.</p>
+        <div id="question-area" class="question-area"><div class="empty-question"><span>🌈</span><p data-i18n="questionPlaceholder">Your next question will pop up here.</p></div></div>
         <div id="feedback" class="feedback" aria-live="polite"></div>
         <div id="star-burst" class="star-burst" aria-hidden="true"></div>
       </div>
       <aside class="vocabulary-panel panel-card">
-        <div class="panel-heading"><div><p class="eyebrow">TODAY'S WORD CREW</p><h2>Meet the words</h2></div><span class="panel-icon" aria-hidden="true">💬</span></div>
-        <div id="word-grid" class="word-grid"><p class="muted">Gathering your words…</p></div>
+        <div class="panel-heading"><div><p class="eyebrow" data-i18n="vocabularyEyebrow">TODAY'S WORD CREW</p><h2 data-i18n="vocabularyTitle">Meet the words</h2></div><span class="panel-icon" aria-hidden="true">💬</span></div>
+        <div id="word-grid" class="word-grid"><p class="muted" data-i18n="loadingWords">Gathering your words…</p></div>
         <div class="decorator-cards" id="decorator-cards" aria-label="Decorated vocabulary cards"></div>
       </aside>
       <aside class="patterns-panel panel-card" aria-labelledby="patterns-heading">
-        <div class="panel-heading"><div><p class="eyebrow">LIVE DEMO</p><h2 id="patterns-heading">Patterns in action</h2></div><span class="live-indicator"><i></i>LIVE</span></div>
-        <p class="patterns-caption">A peek at the helpers behind each answer.</p>
-        <ol class="pattern-list" id="pattern-list" aria-live="polite"><li class="pattern-empty">Waiting for pattern events…</li></ol>
+        <div class="panel-heading"><div><p class="eyebrow" data-i18n="liveDemo">LIVE DEMO</p><h2 id="patterns-heading" data-i18n="patternsTitle">Patterns in action</h2></div><span class="live-indicator"><i></i><span data-i18n="live">LIVE</span></span></div>
+        <p class="patterns-caption" data-i18n="patternsCaption">A peek at the helpers behind each answer.</p>
+        <ol class="pattern-list" id="pattern-list" aria-live="polite"><li class="pattern-empty" data-i18n="waitingEvents">Waiting for pattern events…</li></ol>
       </aside>
     </section>
-    <footer class="footer-note"><span>Made for curious minds</span><span>✦</span><span>One word at a time</span></footer>
+    <footer class="footer-note"><span data-i18n="footerMade">Made for curious minds</span><span>✦</span><span data-i18n="footerWords">One word at a time</span></footer>
   </main>
 </body>
 </html>

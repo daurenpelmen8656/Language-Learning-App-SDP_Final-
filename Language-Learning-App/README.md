@@ -38,6 +38,8 @@ If the browser does not open automatically, visit [http://localhost:8080](http:/
 
 `WebMain` assembles the application dependencies and starts the HTTP server. The HTML, CSS, and JavaScript frontend calls the Java API; `LessonService` returns lesson data built with dictionary, decorator, factory, and builder components. `ReviewService` applies the selected strategy, updates `UserProgress`, and publishes answer events. The `UserSession` singleton implements `UserProgress` and owns the active session state.
 
+The web interface can be switched between Russian, English, and Kazakh. The built-in dictionary contains 60 English words with Russian and Kazakh translations; lessons and exercises are created from the full dictionary.
+
 ## Patterns and authors
 
 | Pattern | Classes | Author |

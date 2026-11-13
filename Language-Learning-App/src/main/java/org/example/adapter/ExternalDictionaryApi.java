@@ -5,10 +5,10 @@ import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 /**
- * Simulates a third-party dictionary with a format we cannot change ("word|translation").
+ * Simulates a third-party dictionary with a pipe-delimited entry format.
  */
 public class ExternalDictionaryApi {
-    private final Map<String, String> entries = new HashMap<>();
+    private final Map<String, String> entries = new LinkedHashMap<>();
 
     public ExternalDictionaryApi() {
         this(ExternalDictionaryApi.class.getResourceAsStream("/dictionary.txt"));
@@ -23,7 +23,8 @@ public class ExternalDictionaryApi {
                 number++;
                 if (line.isBlank() || line.stripLeading().startsWith("#")) continue;
                 String[] fields = line.split("\\|", -1);
-                if (fields.length != 2 || fields[0].isBlank() || fields[1].isBlank())
+                if ((fields.length != 2 && fields.length != 3)
+                        || Arrays.stream(fields).anyMatch(String::isBlank))
                     throw new IllegalArgumentException("Malformed dictionary line " + number + ": " + line);
                 String word = fields[0].trim().toLowerCase(Locale.ROOT);
                 if (entries.putIfAbsent(word, line) != null)
@@ -38,5 +39,9 @@ public class ExternalDictionaryApi {
         String entry = entries.get(key.toLowerCase(Locale.ROOT));
         if (entry == null) throw new WordNotFoundException(key);
         return entry;
+    }
+
+    public List<String> getEntries() {
+        return List.copyOf(entries.values());
     }
 }
