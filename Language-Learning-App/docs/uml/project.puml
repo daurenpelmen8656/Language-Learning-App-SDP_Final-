@@ -1,0 +1,57 @@
+@startuml
+left to right direction
+class Main
+class LearningFacade
+class ReviewService
+class LessonBuilder
+class Lesson
+class ExerciseFactory
+interface Exercise
+interface DictionaryService
+class DictionaryAdapter
+class ExternalDictionaryApi
+class Word
+interface WordCard
+class BasicWordCard
+abstract class WordCardDecorator
+interface ReviewStrategy
+class LeitnerStrategy
+class Sm2Strategy
+class SimpleIntervalStrategy
+class UserSession
+class WordProgress
+class ProgressPublisher
+interface ProgressObserver
+class XpTracker
+class StreakTracker
+class ReminderService
+class AchievementNotifier
+Main --> LearningFacade
+LearningFacade --> DictionaryService
+DictionaryService <|.. DictionaryAdapter
+DictionaryAdapter --> ExternalDictionaryApi
+DictionaryAdapter --> Word
+LearningFacade --> LessonBuilder
+LessonBuilder --> Lesson
+Lesson o--> Word
+Lesson o--> Exercise
+LearningFacade --> ExerciseFactory
+ExerciseFactory ..> Exercise
+LearningFacade --> WordCard
+WordCard <|.. BasicWordCard
+WordCard <|.. WordCardDecorator
+WordCardDecorator o--> WordCard
+LearningFacade --> ReviewService
+ReviewService --> ReviewStrategy
+ReviewStrategy <|.. LeitnerStrategy
+ReviewStrategy <|.. Sm2Strategy
+ReviewStrategy <|.. SimpleIntervalStrategy
+ReviewService --> UserSession
+UserSession o--> WordProgress
+ReviewService --> ProgressPublisher
+ProgressPublisher o--> ProgressObserver
+ProgressObserver <|.. XpTracker
+ProgressObserver <|.. StreakTracker
+ProgressObserver <|.. ReminderService
+ProgressObserver <|.. AchievementNotifier
+@enduml

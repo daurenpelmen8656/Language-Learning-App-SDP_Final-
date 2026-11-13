@@ -2,6 +2,8 @@ package org.example.adapter;
 
 import org.example.Word;
 import org.junit.jupiter.api.Test;
+import java.io.ByteArrayInputStream;
+import java.nio.charset.StandardCharsets;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -24,7 +26,15 @@ class DictionaryAdapterTest {
 
     @Test
     void unknownWordIsRejected() {
-        assertThrows(IllegalArgumentException.class,
+        assertThrows(WordNotFoundException.class,
                 () -> dictionary.findWord("unknown-word"));
+    }
+
+    @Test
+    void malformedLineReportsLocation() {
+        IllegalArgumentException error = assertThrows(IllegalArgumentException.class,
+                () -> new ExternalDictionaryApi(new ByteArrayInputStream(
+                        "valid|верно\nbroken line".getBytes(StandardCharsets.UTF_8))));
+        assertEquals("Malformed dictionary line 2: broken line", error.getMessage());
     }
 }

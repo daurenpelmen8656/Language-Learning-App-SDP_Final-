@@ -44,6 +44,7 @@ public class LearningFacade {
     private ReviewStrategy reviewStrategy;
     private final DictionaryService dictionaryService;
     private final ProgressPublisher publisher;
+    private final ReviewService reviewService;
 
     public LearningFacade() {
         this(new LeitnerStrategy());
@@ -61,6 +62,7 @@ public class LearningFacade {
         this.publisher.attach(new StreakTracker());
         this.publisher.attach(new ReminderService());
         this.publisher.attach(new AchievementNotifier());
+        this.reviewService = new ReviewService(publisher);
     }
 
     public void setReviewStrategy(ReviewStrategy reviewStrategy) {
@@ -89,7 +91,9 @@ public class LearningFacade {
 
         // Шаг 2: Украшаем карточки слов через Decorator
         System.out.println("\n--- Карточки слов (паттерн Decorator) ---");
-        WordCard card1 = new ExampleDecorator(new BasicWordCard(w1), "An apple a day keeps the doctor away");
+        WordCard card1 = new ImageHintDecorator(new AudioDecorator(
+                new ExampleDecorator(new BasicWordCard(w1), "An apple a day keeps the doctor away"),
+                "audio/apple.mp3"), "img/apple.png");
         WordCard card2 = new AudioDecorator(new BasicWordCard(w2), "audio/window.mp3");
         WordCard card3 = new ImageHintDecorator(new BasicWordCard(w3), "img/library_book.png");
 
@@ -153,27 +157,7 @@ public class LearningFacade {
      * - рассылает событие всем подписчикам через Observer
      */
     public void submitAnswer(String wordText, boolean correct) {
-        UserSession session = UserSession.getInstance();
-        WordProgress progress = session.getProgress(wordText);
-
-        // Расчет интервала через текущую Strategy
-        int nextDays = reviewStrategy.nextReviewDays(
-                progress.getBox(),
-                progress.getConsecutiveCorrect(),
-                correct
-        );
-
-        // Обновление прогресса
-        boolean isFirstTimeLearned = (progress.getBox() == 0 && correct);
-        progress.recordAnswer(correct);
-
-        if (isFirstTimeLearned) {
-            session.incrementWordsLearned();
-        }
-
-        // Оповещение всех подписчиков через Observer
-        ProgressEvent event = new ProgressEvent(wordText, correct, nextDays);
-        publisher.notifyObservers(event);
+        reviewService.submitAnswer(wordText, correct, reviewStrategy);
     }
 
     /**
