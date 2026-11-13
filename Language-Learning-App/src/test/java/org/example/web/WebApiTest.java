@@ -36,7 +36,7 @@ class WebApiTest {
 
     @BeforeEach
     void resetSingleton() {
-        UserSession.resetForTests();
+        UserSession.getInstance().reset();
     }
 
     @Test

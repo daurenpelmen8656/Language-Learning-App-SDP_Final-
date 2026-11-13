@@ -16,6 +16,7 @@ public final class TestUserProgress implements UserProgress {
     private int wordsLearned;
 
     @Override public String getUsername() { return "Test learner"; }
+    @Override public void setUsername(String username) { throw new UnsupportedOperationException(); }
     @Override public int getXp() { return xp; }
     @Override public void addXp(int amount) { xp += amount; }
     @Override public int getStreak() { return streak; }

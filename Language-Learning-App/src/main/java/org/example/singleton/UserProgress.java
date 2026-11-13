@@ -5,6 +5,7 @@ import java.util.Map;
 
 public interface UserProgress {
     String getUsername();
+    void setUsername(String username);
     int getXp();
     void addXp(int amount);
     int getStreak();

@@ -1,36 +1,12 @@
 package org.example.factory;
 
-public class FlashcardExercise implements Exercise {
-    private final String word;
-    private final String expectedTranslation;
-
+public class FlashcardExercise extends AbstractTextExercise {
     public FlashcardExercise(String word, String expectedTranslation) {
-        this.word = word;
-        this.expectedTranslation = expectedTranslation;
-    }
-
-    @Override
-    public boolean check(String answer) {
-        return expectedTranslation.equalsIgnoreCase(answer.trim());
-    }
-
-    @Override
-    public String getType() {
-        return "flashcard";
-    }
-
-    @Override
-    public String getQuestion() {
-        return word;
-    }
-
-    @Override
-    public String getCorrectAnswer() {
-        return expectedTranslation;
+        super(word, expectedTranslation);
     }
 
     @Override
     public String getTaskText() {
-        return "[Flashcard] Как переводится слово: " + word + "?";
+        return "[Flashcard] Как переводится слово: " + getPrompt() + "?";
     }
 }

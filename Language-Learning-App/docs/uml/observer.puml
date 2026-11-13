@@ -1,0 +1,23 @@
+@startuml
+interface ProgressSubject { +attach(observer)
+  +detach(observer)
+  +notifyObservers(event) }
+interface ProgressObserver { +update(event: ProgressEvent) }
+class ProgressPublisher
+class ProgressEvent { -wordText: String
+  -correct: boolean
+  -nextReviewDays: int }
+class XpTracker
+class StreakTracker
+class ReminderService
+class AchievementNotifier
+ProgressSubject <|.. ProgressPublisher
+ProgressPublisher o--> ProgressObserver : subscribers
+ProgressPublisher ..> ProgressEvent
+ProgressObserver <|.. XpTracker
+ProgressObserver <|.. StreakTracker
+ProgressObserver <|.. ReminderService
+ProgressObserver <|.. AchievementNotifier
+XpTracker --> UserSession
+StreakTracker --> UserSession
+@enduml
