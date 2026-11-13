@@ -3,6 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#7563e8">
   <title>Language Learning App</title>
   <link rel="stylesheet" href="/style.css">
   <script src="/app.js" defer></script>
@@ -10,20 +11,50 @@
 <body>
   <main class="page-shell">
     <header class="topbar">
-      <a class="brand" href="/" aria-label="Language Learning App home"><span class="brand-mark">Aa</span> Language Learning App</a>
-      <div class="score-strip"><span>⭐ <b id="xp">0</b> XP</span><span>🔥 <b id="streak">0</b> streak</span><span>📚 <b id="learned">0</b> learned</span></div>
+      <a class="brand" href="/" aria-label="Language Learning App home"><span class="brand-mark">Aa</span><span>Language Learning App</span></a>
+      <div class="score-strip" aria-label="Your learning stats">
+        <span class="score-chip xp-chip">⭐ <b id="xp">0</b><small>XP</small></span>
+        <span class="score-chip streak-chip">🔥 <b id="streak">0</b><small>streak</small></span>
+        <span class="score-chip learned-chip">📚 <b id="learned">0</b><small>learned</small></span>
+        <span class="score-chip due-chip">⏰ <b id="due">0</b><small>due today</small></span>
+      </div>
     </header>
-    <section class="intro">
-      <p class="eyebrow">YOUR DAILY WORD QUEST</p>
-      <h1 id="lesson-title">Loading your lesson…</h1>
-      <p>Pick a word, say it, and make it stick.</p>
+
+    <section class="hero">
+      <div class="hero-copy">
+        <p class="eyebrow">A LITTLE PLAY GOES A LONG WAY</p>
+        <h1 id="lesson-title">Your next word adventure awaits!</h1>
+        <p>Choose a mini-game, meet a few new words, and collect your stars.</p>
+      </div>
+      <div class="hero-mascot" aria-hidden="true"><span>🦉</span><i>hello!</i></div>
     </section>
-    <section class="word-grid" id="word-grid" aria-label="Lesson vocabulary"></section>
-    <section class="practice-panel">
-      <div class="section-heading"><div><p class="eyebrow">QUICK PRACTICE</p><h2>Try a question</h2></div><span class="practice-icon">✏️</span></div>
-      <div id="exercise-list" class="exercise-list"><p>Loading practice…</p></div>
-      <p id="status" class="status" aria-live="polite"></p>
+
+    <section class="game-section" aria-labelledby="games-heading">
+      <div class="section-title"><div><p class="eyebrow">PICK YOUR PLAY</p><h2 id="games-heading">Five ways to learn</h2></div><span class="section-doodle" aria-hidden="true">✦</span></div>
+      <div class="game-grid">
+        <button class="game-tile tile-mint" type="button" data-game="listen-pick"><span class="tile-number">01</span><span class="tile-emoji">🎧</span><strong>Listen & Pick</strong><small>Hear it. Find it.</small><span class="tile-arrow">↗</span></button>
+        <button class="game-tile tile-peach" type="button" data-game="picture-word"><span class="tile-number">02</span><span class="tile-emoji">🖼️</span><strong>Picture → Word</strong><small>Spot the right word.</small><span class="tile-arrow">↗</span></button>
+        <button class="game-tile tile-blue" type="button" data-game="word-picture"><span class="tile-number">03</span><span class="tile-emoji">🧠</span><strong>Word → Picture</strong><small>Match it to a picture.</small><span class="tile-arrow">↗</span></button>
+        <button class="game-tile tile-yellow" type="button" data-game="translation"><span class="tile-number">04</span><span class="tile-emoji">✍️</span><strong>Translation</strong><small>Type what it means.</small><span class="tile-arrow">↗</span></button>
+        <button class="game-tile tile-lilac" type="button" data-game="quiz"><span class="tile-number">05</span><span class="tile-emoji">🎯</span><strong>Quick Quiz</strong><small>Pick the best answer.</small><span class="tile-arrow">↗</span></button>
+      </div>
     </section>
+
+    <section class="play-layout" aria-label="Selected game and vocabulary">
+      <div class="play-panel panel-card">
+        <div class="panel-heading"><div><p class="eyebrow" id="game-kicker">READY WHEN YOU ARE</p><h2 id="game-title">Pick a game to begin</h2></div><span class="panel-icon" id="game-icon" aria-hidden="true">🎲</span></div>
+        <p class="game-instructions" id="game-instructions">Choose one of the colorful tiles above.</p>
+        <div id="question-area" class="question-area"><div class="empty-question"><span>🌈</span><p>Your next question will pop up here.</p></div></div>
+        <div id="feedback" class="feedback" aria-live="polite"></div>
+        <div id="star-burst" class="star-burst" aria-hidden="true"></div>
+      </div>
+      <aside class="vocabulary-panel panel-card">
+        <div class="panel-heading"><div><p class="eyebrow">TODAY'S WORD CREW</p><h2>Meet the words</h2></div><span class="panel-icon" aria-hidden="true">💬</span></div>
+        <div id="word-grid" class="word-grid"><p class="muted">Gathering your words…</p></div>
+        <div class="decorator-cards" id="decorator-cards" aria-label="Decorated vocabulary cards"></div>
+      </aside>
+    </section>
+    <footer class="footer-note"><span>Made for curious minds</span><span>✦</span><span>One word at a time</span></footer>
   </main>
 </body>
 </html>
