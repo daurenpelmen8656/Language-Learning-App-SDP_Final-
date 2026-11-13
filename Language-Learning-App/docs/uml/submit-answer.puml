@@ -1,0 +1,29 @@
+@startuml
+actor Learner
+participant LearningFacade as Facade
+participant ReviewService
+participant UserSession
+participant WordProgress as UserProgress
+participant ReviewStrategy as Strategy
+participant ProgressPublisher as Publisher
+participant XpTracker
+participant StreakTracker
+participant ReminderService
+participant AchievementNotifier
+Learner -> Facade : submitAnswer(word, correct)
+Facade -> ReviewService : submitAnswer(word, correct, strategy)
+ReviewService -> UserSession : getProgress(word)
+UserSession --> ReviewService : UserProgress
+ReviewService -> UserProgress : getBox(), getConsecutiveCorrect()
+ReviewService -> Strategy : nextReviewDays(box, streak, correct)
+Strategy --> ReviewService : days
+ReviewService -> UserProgress : recordAnswer(correct)
+opt first correct answer
+  ReviewService -> UserSession : incrementWordsLearned()
+end
+ReviewService -> Publisher : notifyObservers(ProgressEvent)
+Publisher -> XpTracker : update(event)
+Publisher -> StreakTracker : update(event)
+Publisher -> ReminderService : update(event)
+Publisher -> AchievementNotifier : update(event)
+@enduml

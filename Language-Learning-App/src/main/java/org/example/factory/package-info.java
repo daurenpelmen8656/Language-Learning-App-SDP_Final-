@@ -1,4 +1,5 @@
 /**
- * Factory pattern — creates Exercise objects. (Yelzhan)
+ * Factory Method pattern — creates Exercise objects through ExerciseCreator
+ * subclasses registered in ExerciseFactory. (Yelzhan)
  */
 package org.example.factory;

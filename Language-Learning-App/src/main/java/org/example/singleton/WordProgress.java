@@ -12,16 +12,21 @@ public class WordProgress {
     private LocalDate nextReviewDate = LocalDate.MIN;
 
     public WordProgress() {
-        this.box = 0;
-        this.consecutiveCorrect = 0;
+        this(0, 0);
     }
 
     public WordProgress(int box, int consecutiveCorrect) {
+        if (box < 0 || consecutiveCorrect < 0) {
+            throw new IllegalArgumentException("Progress values must not be negative");
+        }
         this.box = box;
         this.consecutiveCorrect = consecutiveCorrect;
     }
 
     public WordProgress(int box, int consecutiveCorrect, LocalDate nextReviewDate) {
+        if (box < 0 || consecutiveCorrect < 0) {
+            throw new IllegalArgumentException("Progress values must not be negative");
+        }
         this.box = box;
         this.consecutiveCorrect = consecutiveCorrect;
         this.nextReviewDate = Objects.requireNonNull(nextReviewDate);

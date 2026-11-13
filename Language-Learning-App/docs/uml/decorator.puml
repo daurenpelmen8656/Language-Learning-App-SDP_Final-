@@ -1,0 +1,16 @@
+@startuml
+interface WordCard { +getWord(): Word
+  +render(): String }
+class BasicWordCard
+abstract class WordCardDecorator
+class ExampleDecorator
+class AudioDecorator
+class ImageHintDecorator
+WordCard <|.. BasicWordCard
+WordCard <|.. WordCardDecorator
+WordCardDecorator o--> WordCard : wraps
+WordCardDecorator <|-- ExampleDecorator
+WordCardDecorator <|-- AudioDecorator
+WordCardDecorator <|-- ImageHintDecorator
+BasicWordCard --> Word
+@enduml
