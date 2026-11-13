@@ -9,6 +9,11 @@ import java.util.Map;
 
 public final class WebApiHandler implements HttpHandler {
     private static final int MAX_REQUEST_BYTES = 16_384;
+    private static final String LESSON_PATH = "/api/lesson";
+    private static final String ANSWER_PATH = "/api/answer";
+    private static final String PROGRESS_PATH = "/api/progress";
+    private static final String STRATEGY_PATH = "/api/strategy";
+    private static final String EVENTS_PATH = "/api/events";
     private final WebApi api;
 
     public WebApiHandler(WebApi api) {
@@ -21,11 +26,11 @@ public final class WebApiHandler implements HttpHandler {
             String path = exchange.getRequestURI().getPath();
             String method = exchange.getRequestMethod();
             Object response = switch (path) {
-                case "/api/lesson" -> handleGetLesson(method);
-                case "/api/progress" -> handleGetProgress(method);
-                case "/api/events" -> handleGetEvents(method);
-                case "/api/answer" -> handleAnswer(exchange, method);
-                case "/api/strategy" -> handleStrategy(exchange, method);
+                case LESSON_PATH -> handleGetLesson(method);
+                case PROGRESS_PATH -> handleGetProgress(method);
+                case EVENTS_PATH -> handleGetEvents(method);
+                case ANSWER_PATH -> handleAnswer(exchange, method);
+                case STRATEGY_PATH -> handleStrategy(exchange, method);
                 default -> throw new NotFoundException();
             };
             sendJson(exchange, 200, response);
