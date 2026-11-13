@@ -1,4 +1,9 @@
 const wordEmojis = { apple: "🍎", window: "🪟", book: "📘", language: "💬", pattern: "🧩" };
+const PATTERN_EVENT_POLL_INTERVAL_MS = 2200;
+const CORRECT_BEEP_START_HZ = 660;
+const CORRECT_BEEP_END_HZ = 880;
+const CORRECT_BEEP_SWEEP_SECONDS = 0.12;
+const CORRECT_BEEP_DURATION_SECONDS = 0.18;
 const gameDetails = {
   "listen-pick": { title: "Listen & Pick", icon: "🎧", instructions: "Listen to the word, then choose its meaning." },
   "picture-word": { title: "Picture → Word", icon: "🖼️", instructions: "Look closely. Which word belongs to this picture?" },
@@ -12,6 +17,7 @@ const cardList = document.querySelector("#decorator-cards");
 const questionArea = document.querySelector("#question-area");
 const feedbackLine = document.querySelector("#feedback");
 const burst = document.querySelector("#star-burst");
+const patternList = document.querySelector("#pattern-list");
 let lessonData;
 let activeGame = "";
 let questionIndex = 0;
@@ -46,7 +52,9 @@ function renderWords(words) {
 }
 
 function renderDecoratorCards(cards) {
-  cardList.replaceChildren(...cards.map((card) => {
+  const visibleDecorations = new Set([...document.querySelectorAll("[data-decoration]:checked")]
+    .map((toggle) => toggle.dataset.decoration));
+  cardList.replaceChildren(...cards.filter((card) => visibleDecorations.has(card.decoration)).map((card) => {
     const item = document.createElement("div");
     item.className = "decorator-card";
     const label = document.createElement("b");
@@ -209,11 +217,14 @@ async function checkAnswer(answer, question) {
     button.disabled = true;
   });
   try {
-    await requestJson("/api/answer", {
+    const result = await requestJson("/api/answer", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ word: question.word, correct }),
     });
+    if (correct && result.unlockedAchievements.length > 0) {
+      showFeedback(`Achievement unlocked: ${result.unlockedAchievements.at(-1)} 🏆`, true);
+    }
     await refreshProgress();
   } catch (error) {
     showFeedback(error.message, false);
@@ -241,14 +252,15 @@ function playBeep() {
   const oscillator = audioContext.createOscillator();
   const gain = audioContext.createGain();
   oscillator.type = "sine";
-  oscillator.frequency.setValueAtTime(660, audioContext.currentTime);
-  oscillator.frequency.exponentialRampToValueAtTime(880, audioContext.currentTime + 0.12);
+  oscillator.frequency.setValueAtTime(CORRECT_BEEP_START_HZ, audioContext.currentTime);
+  oscillator.frequency.exponentialRampToValueAtTime(CORRECT_BEEP_END_HZ,
+    audioContext.currentTime + CORRECT_BEEP_SWEEP_SECONDS);
   gain.gain.setValueAtTime(0.12, audioContext.currentTime);
-  gain.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.18);
+  gain.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + CORRECT_BEEP_DURATION_SECONDS);
   oscillator.connect(gain);
   gain.connect(audioContext.destination);
   oscillator.start();
-  oscillator.stop(audioContext.currentTime + 0.18);
+  oscillator.stop(audioContext.currentTime + CORRECT_BEEP_DURATION_SECONDS);
 }
 
 function showStars() {
@@ -269,6 +281,66 @@ async function refreshProgress() {
   document.querySelector("#streak").textContent = progress.streak;
   document.querySelector("#learned").textContent = progress.wordsLearned;
   document.querySelector("#due").textContent = progress.dueWords;
+  const strategyValues = { Leitner: "leitner", Sm2: "sm2", SimpleInterval: "simple" };
+  document.querySelector("#strategy-select").value = strategyValues[progress.strategy] || "leitner";
+}
+
+async function changeStrategy(event) {
+  const selector = event.currentTarget;
+  try {
+    const result = await requestJson("/api/strategy", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name: selector.value }),
+    });
+    document.querySelector("#game-instructions").textContent = `${result.strategy} strategy is ready for your next review.`;
+  } catch (error) {
+    document.querySelector("#game-instructions").textContent = error.message;
+    await refreshProgress();
+  }
+}
+
+function patternTag(pattern) {
+  return pattern.split("[")[0];
+}
+
+function renderPatternEvents(events) {
+  const entries = events.map((event) => {
+    const item = document.createElement("li");
+    item.className = "pattern-event";
+    const meta = document.createElement("div");
+    meta.className = "event-meta";
+    const tag = document.createElement("span");
+    const pattern = patternTag(event.pattern);
+    tag.className = `pattern-tag tag-${pattern.toLowerCase()}`;
+    tag.textContent = pattern;
+    const time = document.createElement("time");
+    time.className = "event-time";
+    time.dateTime = event.occurredAt;
+    time.textContent = new Date(event.occurredAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" });
+    const message = document.createElement("p");
+    message.textContent = event.message;
+    meta.append(tag, time);
+    item.append(meta, message);
+    return item;
+  });
+  patternList.replaceChildren(...(entries.length ? entries : [emptyPatternMessage()]));
+}
+
+function emptyPatternMessage() {
+  const item = document.createElement("li");
+  item.className = "pattern-empty";
+  item.textContent = "Waiting for pattern events…";
+  return item;
+}
+
+async function refreshPatternEvents() {
+  try {
+    const events = await requestJson("/api/events");
+    renderPatternEvents(events);
+  } catch (error) {
+    patternList.replaceChildren(emptyPatternMessage());
+  }
 }
 
 async function loadLesson() {
@@ -278,6 +350,7 @@ async function loadLesson() {
     renderWords(lessonData.words);
     renderDecoratorCards(lessonData.cards);
     await refreshProgress();
+    await refreshPatternEvents();
   } catch (error) {
     document.querySelector("#lesson-title").textContent = "Could not load your lesson";
     document.querySelector("#game-instructions").textContent = error.message;
@@ -287,4 +360,9 @@ async function loadLesson() {
 document.querySelectorAll(".game-tile").forEach((tile) => {
   tile.addEventListener("click", () => setGame(tile.dataset.game));
 });
+document.querySelector("#strategy-select").addEventListener("change", changeStrategy);
+document.querySelectorAll("[data-decoration]").forEach((toggle) => {
+  toggle.addEventListener("change", () => lessonData && renderDecoratorCards(lessonData.cards));
+});
+window.setInterval(refreshPatternEvents, PATTERN_EVENT_POLL_INTERVAL_MS);
 loadLesson();

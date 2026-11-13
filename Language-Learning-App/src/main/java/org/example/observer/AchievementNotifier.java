@@ -9,6 +9,21 @@ public class AchievementNotifier implements ProgressObserver {
     private int correctAnswers;
     private final List<String> unlockedAchievements = new ArrayList<>();
 
+    public AchievementNotifier() {
+        this(0);
+    }
+
+    public AchievementNotifier(int previousCorrectAnswers) {
+        if (previousCorrectAnswers < 0) {
+            throw new IllegalArgumentException("Correct answer count must be non-negative");
+        }
+        correctAnswers = previousCorrectAnswers;
+        int milestoneCount = previousCorrectAnswers / MILESTONE;
+        for (int milestoneIndex = 1; milestoneIndex <= milestoneCount; milestoneIndex++) {
+            unlockedAchievements.add((long) milestoneIndex * MILESTONE + " correct answers");
+        }
+    }
+
     @Override
     public void update(ProgressEvent event) {
         if (!event.isCorrect()) {

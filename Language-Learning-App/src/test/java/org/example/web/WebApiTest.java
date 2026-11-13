@@ -90,7 +90,7 @@ class WebApiTest {
                 "leitner", leitner,
                 "sm2", new Sm2Strategy(),
                 "simple", new SimpleIntervalStrategy());
-        return new WebApi(lessonService, reviewService, facade, userProgress, session,
+        return new WebApi(lessonService, reviewService, facade, session,
                 new SessionStorage(temporaryDirectory.resolve("progress.properties")), achievementNotifier,
                 eventLog, strategies);
     }

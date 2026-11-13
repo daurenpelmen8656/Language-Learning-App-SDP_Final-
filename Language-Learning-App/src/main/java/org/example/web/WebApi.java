@@ -1,6 +1,7 @@
 package org.example.web;
 
 import org.example.facade.AnswerResult;
+import org.example.facade.LearningFacade;
 import org.example.facade.LessonService;
 import org.example.facade.LessonView;
 import org.example.facade.ProgressView;
@@ -10,10 +11,8 @@ import org.example.facade.WordView;
 import org.example.factory.Exercise;
 import org.example.observer.AchievementNotifier;
 import org.example.singleton.SessionStorage;
-import org.example.singleton.UserProgress;
 import org.example.singleton.UserSession;
 import org.example.strategy.ReviewStrategy;
-import org.example.facade.LearningFacade;
 
 import java.io.IOException;
 import java.util.LinkedHashMap;
@@ -22,10 +21,19 @@ import java.util.Map;
 import java.util.Objects;
 
 public final class WebApi {
+    static final String LEITNER_STRATEGY = "leitner";
+    static final String SM2_STRATEGY = "sm2";
+    static final String SIMPLE_STRATEGY = "simple";
+    private static final String BUILDER_PATTERN = "Builder";
+    private static final String FACTORY_PATTERN = "Factory";
+    private static final String ADAPTER_PATTERN = "Adapter";
+    private static final String DECORATOR_PATTERN = "Decorator";
+    private static final String FACADE_PATTERN = "Facade";
+    private static final String SINGLETON_PATTERN = "Singleton";
+    private static final String NEXT_REVIEW_EVENT = "next review in %d days";
     private final LessonService lessonService;
     private final ReviewService reviewService;
     private final LearningFacade learningFacade;
-    private final UserProgress userProgress;
     private final UserSession userSession;
     private final SessionStorage sessionStorage;
     private final AchievementNotifier achievementNotifier;
@@ -33,13 +41,12 @@ public final class WebApi {
     private final Map<String, ReviewStrategy> strategies;
 
     public WebApi(LessonService lessonService, ReviewService reviewService, LearningFacade learningFacade,
-                  UserProgress userProgress, UserSession userSession, SessionStorage sessionStorage,
+                  UserSession userSession, SessionStorage sessionStorage,
                   AchievementNotifier achievementNotifier, PatternEventLog eventLog,
                   Map<String, ReviewStrategy> strategies) {
         this.lessonService = Objects.requireNonNull(lessonService);
         this.reviewService = Objects.requireNonNull(reviewService);
         this.learningFacade = Objects.requireNonNull(learningFacade);
-        this.userProgress = Objects.requireNonNull(userProgress);
         this.userSession = Objects.requireNonNull(userSession);
         this.sessionStorage = Objects.requireNonNull(sessionStorage);
         this.achievementNotifier = Objects.requireNonNull(achievementNotifier);
@@ -59,9 +66,10 @@ public final class WebApi {
         }
         AnswerResult result = reviewService.submitAnswer(word, correct);
         sessionStorage.save(userSession);
-        eventLog.record("Singleton", "UserSession saved");
+        eventLog.record(SINGLETON_PATTERN, "UserSession saved");
         String strategyName = strategyName(learningFacade.getReviewStrategy());
-        eventLog.record("Strategy[" + strategyName + "]", "next review in " + result.nextReviewDays() + " days");
+        eventLog.record("Strategy[" + strategyName + "]",
+                NEXT_REVIEW_EVENT.formatted(result.nextReviewDays()));
 
         ProgressView progress = reviewService.getProgress(strategyName);
         Map<String, Object> answer = new LinkedHashMap<>();
@@ -89,7 +97,7 @@ public final class WebApi {
         result.put("strategy", strategyName(learningFacade.getReviewStrategy()));
         result.put("words", wordData);
         result.put("unlockedAchievements", achievementNotifier.getUnlockedAchievements());
-        eventLog.record("Singleton", "UserSession progress read");
+        eventLog.record(SINGLETON_PATTERN, "UserSession progress read");
         return result;
     }
 
@@ -147,25 +155,25 @@ public final class WebApi {
     }
 
     private void recordLessonEvents(LessonView lesson) {
-        eventLog.record("Builder", "lesson built (" + lesson.words().size() + " words)");
+        eventLog.record(BUILDER_PATTERN, "lesson built (" + lesson.words().size() + " words)");
         for (Exercise exercise : lesson.exercises()) {
-            eventLog.record("Factory", "created " + exercise.getClass().getSimpleName());
+            eventLog.record(FACTORY_PATTERN, "created " + exercise.getClass().getSimpleName());
         }
         for (WordView word : lesson.words()) {
-            eventLog.record("Adapter", "entry " + word.text() + "|" + word.translation() + " -> Word");
+            eventLog.record(ADAPTER_PATTERN, "entry " + word.text() + "|" + word.translation() + " -> Word");
         }
         for (var card : lesson.cards()) {
-            eventLog.record("Decorator", "card + " + card.decoration());
+            eventLog.record(DECORATOR_PATTERN, "card + " + card.decoration());
         }
-        eventLog.record("Facade", "lesson data returned");
+        eventLog.record(FACADE_PATTERN, "lesson data returned");
     }
 
     private String strategyName(ReviewStrategy strategy) {
         for (Map.Entry<String, ReviewStrategy> entry : strategies.entrySet()) {
             if (entry.getValue().getClass().equals(strategy.getClass())) {
                 return switch (entry.getKey()) {
-                    case "leitner" -> "Leitner";
-                    case "sm2" -> "Sm2";
+                    case LEITNER_STRATEGY -> "Leitner";
+                    case SM2_STRATEGY -> "Sm2";
                     default -> "SimpleInterval";
                 };
             }

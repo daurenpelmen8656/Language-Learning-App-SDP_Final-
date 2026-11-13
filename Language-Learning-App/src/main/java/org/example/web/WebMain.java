@@ -22,6 +22,7 @@ import org.example.strategy.Sm2Strategy;
 import java.io.IOException;
 import java.time.Clock;
 import java.util.Map;
+import java.util.concurrent.CountDownLatch;
 
 public final class WebMain {
     public static final int PORT = 8080;
@@ -30,6 +31,11 @@ public final class WebMain {
 
     public static void main(String[] args) throws IOException {
         createServer(PORT).start();
+        try {
+            new CountDownLatch(1).await();
+        } catch (InterruptedException exception) {
+            Thread.currentThread().interrupt();
+        }
     }
 
     public static WebServer createServer(int port) throws IOException {
@@ -45,7 +51,8 @@ public final class WebMain {
         XpTracker xpTracker = new XpTracker(userProgress);
         StreakTracker streakTracker = new StreakTracker(userProgress);
         ReminderService reminderService = new ReminderService();
-        AchievementNotifier achievementNotifier = new AchievementNotifier();
+        AchievementNotifier achievementNotifier = new AchievementNotifier(
+                userProgress.getXp() / XpTracker.XP_PER_CORRECT);
         publisher.attach(xpTracker);
         publisher.attach(streakTracker);
         publisher.attach(reminderService);
@@ -57,10 +64,10 @@ public final class WebMain {
         LessonService lessonService = new LessonService(dictionaryService);
         LearningFacade facade = new LearningFacade(lessonService, reviewService, leitnerStrategy);
         Map<String, ReviewStrategy> strategies = Map.of(
-                "leitner", leitnerStrategy,
-                "sm2", new Sm2Strategy(),
-                "simple", new SimpleIntervalStrategy());
-        WebApi api = new WebApi(lessonService, reviewService, facade, userProgress, userSession,
+                WebApi.LEITNER_STRATEGY, leitnerStrategy,
+                WebApi.SM2_STRATEGY, new Sm2Strategy(),
+                WebApi.SIMPLE_STRATEGY, new SimpleIntervalStrategy());
+        WebApi api = new WebApi(lessonService, reviewService, facade, userSession,
                 sessionStorage, achievementNotifier, eventLog, strategies);
         return new WebServer(api, port);
     }

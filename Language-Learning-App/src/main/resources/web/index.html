@@ -18,6 +18,10 @@
         <span class="score-chip learned-chip">📚 <b id="learned">0</b><small>learned</small></span>
         <span class="score-chip due-chip">⏰ <b id="due">0</b><small>due today</small></span>
       </div>
+      <div class="top-controls">
+        <label class="strategy-control" for="strategy-select"><span>🧭</span><select id="strategy-select" aria-label="Review strategy"><option value="leitner">Leitner</option><option value="sm2">SM-2</option><option value="simple">Simple</option></select></label>
+        <details class="decorator-menu"><summary>🎨 Card extras</summary><div class="decorator-toggles"><label><input type="checkbox" data-decoration="Example" checked> Example</label><label><input type="checkbox" data-decoration="Audio" checked> Audio</label><label><input type="checkbox" data-decoration="ImageHint" checked> Image hint</label></div></details>
+      </div>
     </header>
 
     <section class="hero">
@@ -52,6 +56,11 @@
         <div class="panel-heading"><div><p class="eyebrow">TODAY'S WORD CREW</p><h2>Meet the words</h2></div><span class="panel-icon" aria-hidden="true">💬</span></div>
         <div id="word-grid" class="word-grid"><p class="muted">Gathering your words…</p></div>
         <div class="decorator-cards" id="decorator-cards" aria-label="Decorated vocabulary cards"></div>
+      </aside>
+      <aside class="patterns-panel panel-card" aria-labelledby="patterns-heading">
+        <div class="panel-heading"><div><p class="eyebrow">LIVE DEMO</p><h2 id="patterns-heading">Patterns in action</h2></div><span class="live-indicator"><i></i>LIVE</span></div>
+        <p class="patterns-caption">A peek at the helpers behind each answer.</p>
+        <ol class="pattern-list" id="pattern-list" aria-live="polite"><li class="pattern-empty">Waiting for pattern events…</li></ol>
       </aside>
     </section>
     <footer class="footer-note"><span>Made for curious minds</span><span>✦</span><span>One word at a time</span></footer>
