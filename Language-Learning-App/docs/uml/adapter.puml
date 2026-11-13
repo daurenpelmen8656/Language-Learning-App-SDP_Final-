@@ -1,0 +1,13 @@
+@startuml
+interface DictionaryService { +findWord(key: String): Word }
+class DictionaryAdapter { -externalApi: ExternalDictionaryApi }
+class ExternalDictionaryApi { -entries: Map<String,String>
+  +getEntry(key: String): String }
+class WordNotFoundException
+class Word
+DictionaryService <|.. DictionaryAdapter
+DictionaryAdapter --> ExternalDictionaryApi
+DictionaryAdapter --> Word
+ExternalDictionaryApi ..> WordNotFoundException
+note right of ExternalDictionaryApi : Reads dictionary.txt; returns word|translation
+@enduml
