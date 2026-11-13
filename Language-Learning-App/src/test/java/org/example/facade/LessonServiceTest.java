@@ -13,7 +13,7 @@ class LessonServiceTest {
         LessonView lesson = new LessonService(new DictionaryAdapter(new ExternalDictionaryApi())).buildLesson();
 
         assertEquals(3, lesson.words().size());
-        assertEquals(3, lesson.renderedCards().size());
+        assertEquals(3, lesson.cards().size());
         assertEquals(3, lesson.exercises().size());
         assertThrows(UnsupportedOperationException.class, () -> lesson.words().clear());
     }

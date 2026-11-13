@@ -42,10 +42,13 @@ public final class LessonService {
         Word window = dictionaryService.findWord(WINDOW_WORD_KEY);
         Word book = dictionaryService.findWord(BOOK_WORD_KEY);
 
-        List<String> cards = List.of(
-                new ExampleDecorator(new BasicWordCard(apple), APPLE_EXAMPLE).render(),
-                new AudioDecorator(new BasicWordCard(window), WINDOW_AUDIO).render(),
-                new ImageHintDecorator(new BasicWordCard(book), BOOK_IMAGE).render());
+        List<CardView> cards = List.of(
+                new CardView(apple.getText(), "Example", APPLE_EXAMPLE,
+                        new ExampleDecorator(new BasicWordCard(apple), APPLE_EXAMPLE).render()),
+                new CardView(window.getText(), "Audio", WINDOW_AUDIO,
+                        new AudioDecorator(new BasicWordCard(window), WINDOW_AUDIO).render()),
+                new CardView(book.getText(), "ImageHint", BOOK_IMAGE,
+                        new ImageHintDecorator(new BasicWordCard(book), BOOK_IMAGE).render()));
 
         List<Exercise> exercises = List.of(
                 ExerciseFactory.create(FLASHCARD_TYPE, apple.getText(), apple.getTranslation()),

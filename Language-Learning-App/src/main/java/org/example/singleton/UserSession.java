@@ -5,7 +5,6 @@ import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.time.LocalDate;
-import java.util.LinkedHashMap;
 
 /**
  * Singleton Pattern — maintains global state for the active user session.
@@ -36,6 +35,10 @@ public class UserSession implements UserProgress {
             }
         }
         return instance;
+    }
+
+    public static synchronized void resetForTests() {
+        instance = null;
     }
 
     public String getUsername() {
@@ -92,5 +95,16 @@ public class UserSession implements UserProgress {
             }
         });
         return Collections.unmodifiableMap(dueProgress);
+    }
+
+    public synchronized void restore(String username, int xp, int streak, int wordsLearned,
+                                     Map<String, WordProgress> restoredProgress) {
+        this.username = username;
+        this.xp = xp;
+        this.streak = streak;
+        this.wordsLearned = wordsLearned;
+        progressMap.clear();
+        restoredProgress.forEach((word, progress) -> progressMap.put(word, new WordProgress(
+                progress.getBox(), progress.getConsecutiveCorrect(), progress.getNextReviewDate())));
     }
 }

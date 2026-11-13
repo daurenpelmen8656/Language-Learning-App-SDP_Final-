@@ -15,6 +15,21 @@ public class FlashcardExercise implements Exercise {
     }
 
     @Override
+    public String getType() {
+        return "flashcard";
+    }
+
+    @Override
+    public String getQuestion() {
+        return word;
+    }
+
+    @Override
+    public String getCorrectAnswer() {
+        return expectedTranslation;
+    }
+
+    @Override
     public String getTaskText() {
         return "[Flashcard] Как переводится слово: " + word + "?";
     }

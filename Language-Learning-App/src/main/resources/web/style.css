@@ -1,0 +1,42 @@
+:root {
+  color-scheme: light;
+  --ink: #252250;
+  --purple: #7255d9;
+  --paper: #fffdf8;
+  --line: #302d59;
+  font-family: "Trebuchet MS", "Arial Rounded MT Bold", Arial, sans-serif;
+}
+
+* { box-sizing: border-box; }
+body { margin: 0; min-height: 100vh; color: var(--ink); background: #f3f0ff; }
+.page-shell { max-width: 1080px; margin: 0 auto; padding: 20px 24px 64px; }
+.topbar { display: flex; justify-content: space-between; align-items: center; gap: 18px; padding: 14px 18px; background: var(--paper); border: 3px solid var(--line); border-radius: 20px; box-shadow: 4px 5px 0 var(--line); }
+.brand { display: flex; align-items: center; gap: 10px; color: inherit; font-size: 18px; font-weight: 900; text-decoration: none; }
+.brand-mark { display: grid; place-items: center; width: 42px; height: 42px; color: white; background: var(--purple); border: 2px solid var(--line); border-radius: 14px; transform: rotate(-5deg); }
+.score-strip { display: flex; gap: 10px; flex-wrap: wrap; }
+.score-strip span { padding: 9px 12px; background: #fff3bb; border: 2px solid var(--line); border-radius: 14px; font-weight: 700; }
+.intro { padding: 55px 8px 25px; }
+.eyebrow { margin: 0 0 8px; color: #7051d5; font-size: 12px; font-weight: 900; letter-spacing: .12em; }
+h1, h2, p { margin-top: 0; }
+h1 { max-width: 760px; margin-bottom: 10px; font-size: clamp(32px, 6vw, 58px); line-height: 1.03; }
+.intro > p:last-child { color: #65627f; font-size: 18px; }
+.word-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; }
+.word-card, .practice-panel { border: 3px solid var(--line); border-radius: 22px; box-shadow: 4px 5px 0 var(--line); }
+.word-card { min-height: 170px; padding: 20px; background: white; }
+.word-emoji { font-size: 48px; }
+.word-card h2 { margin: 12px 0 4px; font-size: 24px; }
+.word-card p { margin: 0; color: #65627f; }
+.practice-panel { margin-top: 34px; padding: 24px; background: var(--paper); }
+.section-heading { display: flex; justify-content: space-between; align-items: center; }
+.section-heading h2 { margin: 0 0 20px; font-size: 28px; }
+.practice-icon { font-size: 38px; }
+.exercise-list { display: grid; gap: 12px; }
+.exercise { padding: 16px; background: #fff5cb; border: 2px solid var(--line); border-radius: 16px; }
+.exercise label { display: block; margin-bottom: 9px; font-weight: 800; }
+.exercise form { display: flex; gap: 8px; }
+input, button { min-height: 44px; border: 2px solid var(--line); border-radius: 12px; font: inherit; }
+input { width: 100%; padding: 9px 12px; background: white; }
+button { padding: 8px 16px; color: white; background: var(--purple); font-weight: 900; cursor: pointer; box-shadow: 2px 3px 0 var(--line); }
+button:hover { transform: translateY(-1px); }
+.status { min-height: 24px; margin: 18px 0 0; font-weight: 800; }
+@media (max-width: 620px) { .page-shell { padding: 12px 14px 36px; } .topbar { align-items: flex-start; flex-direction: column; } .intro { padding-top: 38px; } .practice-panel { padding: 18px; } }

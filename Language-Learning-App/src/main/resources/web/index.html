@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Language Learning App</title>
+  <link rel="stylesheet" href="/style.css">
+  <script src="/app.js" defer></script>
+</head>
+<body>
+  <main class="page-shell">
+    <header class="topbar">
+      <a class="brand" href="/" aria-label="Language Learning App home"><span class="brand-mark">Aa</span> Language Learning App</a>
+      <div class="score-strip"><span>⭐ <b id="xp">0</b> XP</span><span>🔥 <b id="streak">0</b> streak</span><span>📚 <b id="learned">0</b> learned</span></div>
+    </header>
+    <section class="intro">
+      <p class="eyebrow">YOUR DAILY WORD QUEST</p>
+      <h1 id="lesson-title">Loading your lesson…</h1>
+      <p>Pick a word, say it, and make it stick.</p>
+    </section>
+    <section class="word-grid" id="word-grid" aria-label="Lesson vocabulary"></section>
+    <section class="practice-panel">
+      <div class="section-heading"><div><p class="eyebrow">QUICK PRACTICE</p><h2>Try a question</h2></div><span class="practice-icon">✏️</span></div>
+      <div id="exercise-list" class="exercise-list"><p>Loading practice…</p></div>
+      <p id="status" class="status" aria-live="polite"></p>
+    </section>
+  </main>
+</body>
+</html>

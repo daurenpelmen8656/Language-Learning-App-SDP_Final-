@@ -15,6 +15,21 @@ public class TranslationExercise implements Exercise {
     }
 
     @Override
+    public String getType() {
+        return "translation";
+    }
+
+    @Override
+    public String getQuestion() {
+        return sentence;
+    }
+
+    @Override
+    public String getCorrectAnswer() {
+        return expectedTranslation;
+    }
+
+    @Override
     public String getTaskText() {
         return "[Translation] Переведите предложение: " + sentence;
     }
