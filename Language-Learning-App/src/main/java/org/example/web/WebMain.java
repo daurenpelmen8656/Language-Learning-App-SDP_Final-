@@ -19,22 +19,40 @@ import org.example.strategy.ReviewStrategy;
 import org.example.strategy.SimpleIntervalStrategy;
 import org.example.strategy.Sm2Strategy;
 
+import java.awt.Desktop;
 import java.io.IOException;
+import java.net.URI;
 import java.time.Clock;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 
 public final class WebMain {
     public static final int PORT = 8080;
+    private static final String LOCAL_URL_FORMAT = "http://localhost:%d";
 
     private WebMain() { }
 
     public static void main(String[] args) throws IOException {
         createServer(PORT).start();
+        openBrowser(PORT);
         try {
             new CountDownLatch(1).await();
         } catch (InterruptedException exception) {
             Thread.currentThread().interrupt();
+        }
+    }
+
+    private static void openBrowser(int port) {
+        String applicationUrl = LOCAL_URL_FORMAT.formatted(port);
+        System.out.println("Language Learning App is running at " + applicationUrl);
+        if (!Desktop.isDesktopSupported()) {
+            System.out.println("Open the URL above in your browser.");
+            return;
+        }
+        try {
+            Desktop.getDesktop().browse(URI.create(applicationUrl));
+        } catch (IOException | UnsupportedOperationException | SecurityException exception) {
+            System.out.println("Could not open a browser automatically. Open " + applicationUrl);
         }
     }
 

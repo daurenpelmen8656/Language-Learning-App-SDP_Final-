@@ -13,14 +13,14 @@ Run the test suite:
 mvn test
 ```
 
-Start `org.example.Main` from your IDE, or run these commands from the project directory:
+Start `org.example.Main` from your IDE or use these commands from the project directory. The app opens the browser automatically after the server starts:
 
 ```bash
 mvn compile
 java -cp target/classes org.example.Main
 ```
 
-Then open [http://localhost:8080](http://localhost:8080). Stop the server with `Ctrl+C`.
+If the browser does not open automatically, visit [http://localhost:8080](http://localhost:8080). Stop the server with `Ctrl+C`.
 
 ## How to run the web UI
 
