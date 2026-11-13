@@ -1,4 +1,4 @@
 /**
- * Singleton pattern — stores user data accessible across the application. (Nurym)
+ * Singleton pattern — stores user data accessible across the application.
  */
 package org.example.singleton;

@@ -15,7 +15,7 @@ public class FlashcardExercise implements Exercise {
     }
 
     @Override
-    public void displayTask() {
-        System.out.println("[Flashcard] Как переводится слово: " + word + "?");
+    public String getTaskText() {
+        return "[Flashcard] Как переводится слово: " + word + "?";
     }
 }

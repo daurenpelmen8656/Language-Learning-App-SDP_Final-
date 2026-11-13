@@ -15,8 +15,8 @@ public class TranslationExercise implements Exercise {
     }
 
     @Override
-    public void displayTask() {
-        System.out.println("[Translation] Переведите предложение: " + sentence);
+    public String getTaskText() {
+        return "[Translation] Переведите предложение: " + sentence;
     }
 }
 

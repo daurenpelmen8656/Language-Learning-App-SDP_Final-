@@ -2,12 +2,15 @@ package org.example.singleton;
 
 import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.Locale;
 import java.util.Map;
+import java.time.LocalDate;
+import java.util.LinkedHashMap;
 
 /**
  * Singleton Pattern — maintains global state for the active user session.
  */
-public class UserSession {
+public class UserSession implements UserProgress {
     private static volatile UserSession instance;
 
     private String username;
@@ -72,10 +75,22 @@ public class UserSession {
     }
 
     public synchronized WordProgress getProgress(String wordText) {
-        return progressMap.computeIfAbsent(wordText.toLowerCase(), k -> new WordProgress());
+        return progressMap.computeIfAbsent(wordText.toLowerCase(Locale.ROOT), k -> new WordProgress());
     }
 
+    @Override
     public Map<String, WordProgress> getAllProgress() {
         return Collections.unmodifiableMap(progressMap);
+    }
+
+    @Override
+    public Map<String, WordProgress> getDueProgress(LocalDate date) {
+        Map<String, WordProgress> dueProgress = new LinkedHashMap<>();
+        progressMap.forEach((word, progress) -> {
+            if (!progress.getNextReviewDate().isAfter(date)) {
+                dueProgress.put(word, progress);
+            }
+        });
+        return Collections.unmodifiableMap(dueProgress);
     }
 }

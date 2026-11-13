@@ -1,11 +1,15 @@
 package org.example.singleton;
 
+import java.time.LocalDate;
+import java.util.Objects;
+
 /**
  * Tracks the spaced-repetition progress for a single word.
  */
 public class WordProgress {
     private int box;
     private int consecutiveCorrect;
+    private LocalDate nextReviewDate = LocalDate.MIN;
 
     public WordProgress() {
         this.box = 0;
@@ -15,6 +19,12 @@ public class WordProgress {
     public WordProgress(int box, int consecutiveCorrect) {
         this.box = box;
         this.consecutiveCorrect = consecutiveCorrect;
+    }
+
+    public WordProgress(int box, int consecutiveCorrect, LocalDate nextReviewDate) {
+        this.box = box;
+        this.consecutiveCorrect = consecutiveCorrect;
+        this.nextReviewDate = Objects.requireNonNull(nextReviewDate);
     }
 
     public int getBox() {
@@ -27,6 +37,14 @@ public class WordProgress {
 
     public int getConsecutiveCorrect() {
         return consecutiveCorrect;
+    }
+
+    public LocalDate getNextReviewDate() {
+        return nextReviewDate;
+    }
+
+    public void setNextReviewDate(LocalDate nextReviewDate) {
+        this.nextReviewDate = Objects.requireNonNull(nextReviewDate);
     }
 
     public void setConsecutiveCorrect(int consecutiveCorrect) {

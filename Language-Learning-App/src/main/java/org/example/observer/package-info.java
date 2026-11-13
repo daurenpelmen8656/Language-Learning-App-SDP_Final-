@@ -1,4 +1,4 @@
 /**
- * Observer pattern — notifies subscribers about progress events. (Nurym)
+ * Observer pattern — notifies subscribers about progress events.
  */
 package org.example.observer;

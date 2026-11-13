@@ -15,7 +15,7 @@ public class QuizExercise implements Exercise {
     }
 
     @Override
-    public void displayTask() {
-        System.out.println("[Quiz] Выберите правильный вариант: " + question);
+    public String getTaskText() {
+        return "[Quiz] Выберите правильный вариант: " + question;
     }
 }
