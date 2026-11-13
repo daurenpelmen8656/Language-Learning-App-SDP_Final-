@@ -13,11 +13,18 @@ Run the test suite:
 mvn test
 ```
 
-Run `org.example.Main` from your IDE. The application includes an optional JavaFX splash screen and timed answer dialogs.
+Start `org.example.Main` from your IDE, or run these commands from the project directory:
+
+```bash
+mvn compile
+java -cp target/classes org.example.Main
+```
+
+Then open [http://localhost:8080](http://localhost:8080). Stop the server with `Ctrl+C`.
 
 ## How to run the web UI
 
-Run `org.example.web.WebMain` from your IDE, then open [http://localhost:8080](http://localhost:8080). The server uses the JDK `HttpServer` and serves the offline HTML, CSS, and JavaScript from `src/main/resources/web`.
+`org.example.Main` delegates to `org.example.web.WebMain`. The server uses the JDK `HttpServer` and serves the offline HTML, CSS, and JavaScript from `src/main/resources/web`.
 
 ### Web API
 
@@ -29,7 +36,7 @@ Run `org.example.web.WebMain` from your IDE, then open [http://localhost:8080](h
 
 ## Architecture
 
-`Main` asks `AppConfig` to assemble the application dependencies. `ConsoleUi` handles console interaction and delegates lesson preparation, review, and progress requests to the thin `LearningFacade`. `LessonService` uses dictionary, decorator, factory, and builder components to return lesson data. `ReviewService` uses the selected strategy, updates the `UserProgress` abstraction, and publishes answer events. The `UserSession` singleton implements `UserProgress` and owns the active session state.
+`WebMain` assembles the application dependencies and starts the HTTP server. The HTML, CSS, and JavaScript frontend calls the Java API; `LessonService` returns lesson data built with dictionary, decorator, factory, and builder components. `ReviewService` applies the selected strategy, updates `UserProgress`, and publishes answer events. The `UserSession` singleton implements `UserProgress` and owns the active session state.
 
 ## Patterns and authors
 
