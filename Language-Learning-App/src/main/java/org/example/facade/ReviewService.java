@@ -2,25 +2,65 @@ package org.example.facade;
 
 import org.example.observer.ProgressEvent;
 import org.example.observer.ProgressPublisher;
-import org.example.singleton.UserSession;
+import org.example.singleton.UserProgress;
 import org.example.singleton.WordProgress;
 import org.example.strategy.ReviewStrategy;
 
-/** Coordinates review calculation, progress update, and event publication. */
-public class ReviewService {
-    private final ProgressPublisher publisher;
+import java.time.Clock;
+import java.time.LocalDate;
+import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
-    public ReviewService(ProgressPublisher publisher) {
-        this.publisher = publisher;
+public final class ReviewService {
+    private ReviewStrategy reviewStrategy;
+    private final UserProgress userProgress;
+    private final ProgressPublisher publisher;
+    private final Clock clock;
+
+    public ReviewService(ReviewStrategy reviewStrategy, UserProgress userProgress,
+                         ProgressPublisher publisher, Clock clock) {
+        this.reviewStrategy = Objects.requireNonNull(reviewStrategy);
+        this.userProgress = Objects.requireNonNull(userProgress);
+        this.publisher = Objects.requireNonNull(publisher);
+        this.clock = Objects.requireNonNull(clock);
     }
 
-    public void submitAnswer(String wordText, boolean correct, ReviewStrategy strategy) {
-        UserSession session = UserSession.getInstance();
-        WordProgress progress = session.getProgress(wordText);
-        int nextDays = strategy.nextReviewDays(progress.getBox(), progress.getConsecutiveCorrect(), correct);
-        boolean firstLearned = progress.getBox() == 0 && correct;
+    public AnswerResult submitAnswer(String wordText, boolean correct) {
+        WordProgress progress = userProgress.getProgress(wordText);
+        int days = reviewStrategy.nextReviewDays(progress.getBox(), progress.getConsecutiveCorrect(), correct);
+        boolean newlyLearned = progress.getBox() == 0 && correct;
         progress.recordAnswer(correct);
-        if (firstLearned) session.incrementWordsLearned();
-        publisher.notifyObservers(new ProgressEvent(wordText, correct, nextDays));
+        LocalDate nextReviewDate = LocalDate.now(clock).plusDays(days);
+        progress.setNextReviewDate(nextReviewDate);
+        if (newlyLearned) {
+            userProgress.incrementWordsLearned();
+        }
+        publisher.notifyObservers(new ProgressEvent(wordText, correct, days));
+        return new AnswerResult(wordText, correct, days, nextReviewDate, userProgress.getXp(), userProgress.getStreak());
+    }
+
+    public void setReviewStrategy(ReviewStrategy reviewStrategy) {
+        this.reviewStrategy = Objects.requireNonNull(reviewStrategy);
+    }
+
+    public Map<String, WordProgressView> getDueWords() {
+        return userProgress.getDueProgress(LocalDate.now(clock)).entrySet().stream()
+                .collect(Collectors.toUnmodifiableMap(Map.Entry::getKey, entry -> {
+                    WordProgress progress = entry.getValue();
+                    return new WordProgressView(progress.getBox(), progress.getConsecutiveCorrect(),
+                            progress.getNextReviewDate());
+                }));
+    }
+
+    public ProgressView getProgress(String strategyName) {
+        Map<String, WordProgressView> words = userProgress.getAllProgress().entrySet().stream()
+                .collect(Collectors.toUnmodifiableMap(Map.Entry::getKey, entry -> {
+                    WordProgress progress = entry.getValue();
+                    return new WordProgressView(progress.getBox(), progress.getConsecutiveCorrect(),
+                            progress.getNextReviewDate());
+                }));
+        return new ProgressView(userProgress.getUsername(), userProgress.getXp(), userProgress.getStreak(),
+                userProgress.getWordsLearned(), strategyName, words);
     }
 }

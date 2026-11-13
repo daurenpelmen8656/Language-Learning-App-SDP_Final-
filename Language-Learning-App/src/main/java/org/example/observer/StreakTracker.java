@@ -1,21 +1,25 @@
 package org.example.observer;
 
-import org.example.singleton.UserSession;
+import org.example.singleton.UserProgress;
+
+import java.util.Objects;
 
 /**
  * Observer that tracks the user's streak of correct answers.
  */
 public class StreakTracker implements ProgressObserver {
+    private final UserProgress userProgress;
+
+    public StreakTracker(UserProgress userProgress) {
+        this.userProgress = Objects.requireNonNull(userProgress);
+    }
 
     @Override
     public void update(ProgressEvent event) {
-        UserSession session = UserSession.getInstance();
         if (event.isCorrect()) {
-            session.incrementStreak();
-            System.out.println("[Streak Tracker] 🔥 Серия верных ответов: " + session.getStreak() + "!");
+            userProgress.incrementStreak();
         } else {
-            session.resetStreak();
-            System.out.println("[Streak Tracker] 💔 Серия сброшена.");
+            userProgress.resetStreak();
         }
     }
 }

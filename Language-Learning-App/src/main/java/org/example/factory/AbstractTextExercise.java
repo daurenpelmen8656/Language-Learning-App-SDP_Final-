@@ -28,4 +28,14 @@ public abstract class AbstractTextExercise implements Exercise {
     protected String getPrompt() {
         return prompt;
     }
+
+    @Override
+    public String getQuestion() {
+        return prompt;
+    }
+
+    @Override
+    public String getCorrectAnswer() {
+        return expectedAnswer;
+    }
 }

@@ -1,25 +1,27 @@
 package org.example.singleton;
 
-import java.util.Collections;
+import java.time.LocalDate;
 import java.util.LinkedHashMap;
+import java.util.Collections;
+import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 
 /**
- * Singleton Pattern — the single, global state of the active user session.
- * Implements {@link UserProgress}, so clients may depend on the interface.
+ * Singleton Pattern — maintains global state for the active user session.
  */
 public class UserSession implements UserProgress {
     public static final String DEFAULT_USERNAME = "Guest";
-
     private static volatile UserSession instance;
 
     private String username;
     private int xp;
     private int streak;
     private int wordsLearned;
-    private final Map<String, WordProgress> progressMap = new LinkedHashMap<>();
+    private final Map<String, WordProgress> progressMap;
 
     private UserSession() {
+        progressMap = new LinkedHashMap<>();
         resetState();
     }
 
@@ -34,31 +36,90 @@ public class UserSession implements UserProgress {
         return instance;
     }
 
-    /**
-     * Returns the session to its initial state (same instance, empty data).
-     * Intended for tests, so that they do not depend on each other, and for "log out".
-     */
+    public synchronized String getUsername() {
+        return username;
+    }
+
+    public synchronized void setUsername(String username) {
+        if (username == null || username.isBlank()) {
+            throw new IllegalArgumentException("Username must not be blank");
+        }
+        this.username = username;
+    }
+
+    public synchronized int getXp() {
+        return xp;
+    }
+
+    public synchronized void addXp(int amount) {
+        if (amount < 0) {
+            throw new IllegalArgumentException("XP cannot be negative");
+        }
+        this.xp += amount;
+    }
+
+    public synchronized int getStreak() {
+        return streak;
+    }
+
+    public synchronized void incrementStreak() {
+        this.streak++;
+    }
+
+    public synchronized void resetStreak() {
+        this.streak = 0;
+    }
+
+    public synchronized int getWordsLearned() {
+        return wordsLearned;
+    }
+
+    public synchronized void incrementWordsLearned() {
+        this.wordsLearned++;
+    }
+
+    public synchronized WordProgress getProgress(String wordText) {
+        if (wordText == null || wordText.isBlank()) {
+            throw new IllegalArgumentException("Word must not be blank");
+        }
+        return progressMap.computeIfAbsent(wordText.toLowerCase(Locale.ROOT), k -> new WordProgress());
+    }
+
+    @Override
+    public synchronized Map<String, WordProgress> getAllProgress() {
+        return Collections.unmodifiableMap(new LinkedHashMap<>(progressMap));
+    }
+
+    @Override
+    public synchronized Map<String, WordProgress> getDueProgress(LocalDate date) {
+        Objects.requireNonNull(date);
+        Map<String, WordProgress> dueProgress = new LinkedHashMap<>();
+        progressMap.forEach((word, progress) -> {
+            if (!progress.getNextReviewDate().isAfter(date)) {
+                dueProgress.put(word, progress);
+            }
+        });
+        return Collections.unmodifiableMap(dueProgress);
+    }
+
     public synchronized void reset() {
         resetState();
     }
 
-    /** A consistent copy of the whole state, taken under the lock. */
     synchronized SessionSnapshot snapshot() {
         Map<String, WordProgress> copy = new LinkedHashMap<>();
-        progressMap.forEach((word, p) ->
-                copy.put(word, new WordProgress(p.getBox(), p.getConsecutiveCorrect())));
+        progressMap.forEach((word, progress) -> copy.put(word, copyProgress(progress)));
         return new SessionSnapshot(username, xp, streak, wordsLearned, copy);
     }
 
-    /** Replaces the whole state with the given snapshot (used when loading from a file). */
     synchronized void restore(SessionSnapshot snapshot) {
-        this.username = snapshot.username();
-        this.xp = snapshot.xp();
-        this.streak = snapshot.streak();
-        this.wordsLearned = snapshot.wordsLearned();
+        Objects.requireNonNull(snapshot);
+        username = snapshot.username();
+        xp = snapshot.xp();
+        streak = snapshot.streak();
+        wordsLearned = snapshot.wordsLearned();
         progressMap.clear();
-        snapshot.progress().forEach((word, p) ->
-                progressMap.put(word, new WordProgress(p.getBox(), p.getConsecutiveCorrect())));
+        snapshot.progress().forEach((word, progress) -> progressMap.put(word, copyProgress(progress)));
     }
 
     private void resetState() {
@@ -69,68 +130,7 @@ public class UserSession implements UserProgress {
         progressMap.clear();
     }
 
-    @Override
-    public synchronized String getUsername() {
-        return username;
-    }
-
-    @Override
-    public synchronized void setUsername(String username) {
-        if (username == null || username.isBlank()) {
-            throw new IllegalArgumentException("Имя пользователя не может быть пустым");
-        }
-        this.username = username;
-    }
-
-    @Override
-    public synchronized int getXp() {
-        return xp;
-    }
-
-    @Override
-    public synchronized void addXp(int amount) {
-        if (amount < 0) {
-            throw new IllegalArgumentException("XP нельзя уменьшить: " + amount);
-        }
-        this.xp += amount;
-    }
-
-    @Override
-    public synchronized int getStreak() {
-        return streak;
-    }
-
-    @Override
-    public synchronized void incrementStreak() {
-        this.streak++;
-    }
-
-    @Override
-    public synchronized void resetStreak() {
-        this.streak = 0;
-    }
-
-    @Override
-    public synchronized int getWordsLearned() {
-        return wordsLearned;
-    }
-
-    @Override
-    public synchronized void incrementWordsLearned() {
-        this.wordsLearned++;
-    }
-
-    @Override
-    public synchronized WordProgress getProgress(String wordText) {
-        if (wordText == null || wordText.isBlank()) {
-            throw new IllegalArgumentException("Слово не может быть пустым");
-        }
-        return progressMap.computeIfAbsent(wordText.toLowerCase(), k -> new WordProgress());
-    }
-
-    /** Read-only snapshot of the progress of all words. */
-    @Override
-    public synchronized Map<String, WordProgress> getAllProgress() {
-        return Collections.unmodifiableMap(new LinkedHashMap<>(progressMap));
+    private static WordProgress copyProgress(WordProgress progress) {
+        return new WordProgress(progress.getBox(), progress.getConsecutiveCorrect(), progress.getNextReviewDate());
     }
 }

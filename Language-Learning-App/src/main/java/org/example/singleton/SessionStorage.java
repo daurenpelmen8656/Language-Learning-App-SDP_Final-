@@ -7,6 +7,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.time.LocalDate;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -65,6 +66,7 @@ public class SessionStorage {
             props.setProperty(prefix + "box", String.valueOf(entry.getValue().getBox()));
             props.setProperty(prefix + "consecutiveCorrect",
                     String.valueOf(entry.getValue().getConsecutiveCorrect()));
+            props.setProperty(prefix + "nextReviewDate", entry.getValue().getNextReviewDate().toString());
         }
 
         Path parent = file.toAbsolutePath().getParent();
@@ -117,7 +119,8 @@ public class SessionStorage {
                 }
                 progress.put(text, new WordProgress(
                         nonNegative(props, prefix + "box"),
-                        nonNegative(props, prefix + "consecutiveCorrect")));
+                        nonNegative(props, prefix + "consecutiveCorrect"),
+                        LocalDate.parse(props.getProperty(prefix + "nextReviewDate", LocalDate.MIN.toString()))));
             }
             return new SessionSnapshot(username, xp, streak, wordsLearned, progress);
         } catch (IllegalArgumentException e) { // includes NumberFormatException

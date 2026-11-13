@@ -1,14 +1,19 @@
 package org.example.observer;
 
+import java.util.Optional;
+
 /**
  * Observer that schedules notifications/reminders for reviewing words.
  */
 public class ReminderService implements ProgressObserver {
+    private ProgressEvent latestReminder;
 
     @Override
     public void update(ProgressEvent event) {
-        System.out.println("[Reminder Service] ⏰ Слово \"" + event.getWordText()
-                + "\" запланировано на повторение через "
-                + event.getNextReviewDays() + " дн.");
+        latestReminder = event;
+    }
+
+    public Optional<ProgressEvent> getLatestReminder() {
+        return Optional.ofNullable(latestReminder);
     }
 }
