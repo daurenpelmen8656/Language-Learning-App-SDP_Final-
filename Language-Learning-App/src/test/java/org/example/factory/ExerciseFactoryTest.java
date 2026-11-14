@@ -66,11 +66,6 @@ class ExerciseFactoryTest {
             MatchingExercise(String prompt, String answer) {
                 super(prompt, answer);
             }
-
-            @Override
-            public void displayTask() {
-                System.out.println("[Matching] " + getPrompt());
-            }
         }
         ExerciseFactory factory = ExerciseFactory.withDefaults().register("matching", new ExerciseCreator() {
             @Override

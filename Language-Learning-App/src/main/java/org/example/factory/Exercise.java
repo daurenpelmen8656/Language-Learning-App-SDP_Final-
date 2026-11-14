@@ -26,9 +26,4 @@ public interface Exercise {
     default String getCorrectAnswer() {
         return "";
     }
-
-    /** Compatibility hook for older exercise implementations; rendering belongs to the UI. */
-    default void displayTask() {
-        throw new UnsupportedOperationException("Exercise text is rendered by the UI");
-    }
 }

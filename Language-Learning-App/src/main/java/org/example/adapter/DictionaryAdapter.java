@@ -3,13 +3,14 @@ package org.example.adapter;
 import org.example.Word;
 
 import java.util.List;
+import java.util.Objects;
 
 /** Adapter that converts a pipe-delimited external entry into Word. */
 public class DictionaryAdapter implements DictionaryService {
     private final ExternalDictionaryApi externalApi;
 
     public DictionaryAdapter(ExternalDictionaryApi externalApi) {
-        this.externalApi = externalApi;
+        this.externalApi = Objects.requireNonNull(externalApi);
     }
 
     @Override
