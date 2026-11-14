@@ -11,7 +11,6 @@ const wordEmojis = {
   one: "1️⃣", two: "2️⃣", three: "3️⃣", four: "4️⃣", five: "5️⃣", read: "📖", write: "✍️",
   run: "🏃", eat: "🍴", sleep: "😴",
 };
-const PATTERN_EVENT_POLL_INTERVAL_MS = 2200;
 const CORRECT_BEEP_START_HZ = 660;
 const CORRECT_BEEP_END_HZ = 880;
 const CORRECT_BEEP_SWEEP_SECONDS = 0.12;
@@ -38,8 +37,6 @@ const languageTexts = {
     playLayoutLabel: "Selected game and vocabulary", ready: "READY WHEN YOU ARE", pickGame: "Pick a game to begin",
     chooseGame: "Choose one of the colorful tiles above.", questionPlaceholder: "Your next question will pop up here.",
     vocabularyEyebrow: "TODAY'S WORD CREW", vocabularyTitle: "Meet the words", loadingWords: "Gathering your words…",
-    liveDemo: "LIVE DEMO", patternsTitle: "Patterns in action", live: "LIVE",
-    patternsCaption: "A peek at the helpers behind each answer.", waitingEvents: "Waiting for pattern events…",
     footerMade: "Made for curious minds", footerWords: "One word at a time", miniGameSelected: "MINI-GAME SELECTED",
     listenHintFull: "Listen to the word, then choose its meaning.", pictureWordHintFull: "Look closely. Which word belongs to this picture?",
     wordPictureHintFull: "Read the word and tap its picture.", translationHintFull: "Type the translation that fits the prompt.",
@@ -66,8 +63,6 @@ const languageTexts = {
     playLayoutLabel: "Выбранная игра и словарь", ready: "ГОТОВЫ НАЧАТЬ?", pickGame: "Выберите игру",
     chooseGame: "Нажмите на одну из цветных карточек выше.", questionPlaceholder: "Здесь появится следующий вопрос.",
     vocabularyEyebrow: "СЛОВА НА СЕГОДНЯ", vocabularyTitle: "Знакомьтесь со словами", loadingWords: "Загружаем слова…",
-    liveDemo: "ДЕМО В РЕАЛЬНОМ ВРЕМЕНИ", patternsTitle: "Паттерны в действии", live: "В ЭФИРЕ",
-    patternsCaption: "Посмотрите, как паттерны помогают приложению.", waitingEvents: "Ждём события паттернов…",
     footerMade: "Для любознательных", footerWords: "По одному слову за раз", miniGameSelected: "ИГРА ВЫБРАНА",
     listenHintFull: "Послушайте слово и выберите его перевод.", pictureWordHintFull: "Посмотрите на картинку. Какое слово подходит?",
     wordPictureHintFull: "Прочитайте слово и выберите картинку.", translationHintFull: "Введите перевод слова.",
@@ -94,8 +89,6 @@ const languageTexts = {
     playLayoutLabel: "Таңдалған ойын және сөздік", ready: "БАСТАУҒА ДАЙЫНСЫЗ БА?", pickGame: "Ойынды бастаңыз",
     chooseGame: "Жоғарыдағы түрлі түсті ойындардың бірін таңдаңыз.", questionPlaceholder: "Келесі сұрақ осында шығады.",
     vocabularyEyebrow: "БҮГІНГІ СӨЗДЕР", vocabularyTitle: "Сөздермен танысыңыз", loadingWords: "Сөздер жүктелуде…",
-    liveDemo: "ТІКЕЛЕЙ ДЕМО", patternsTitle: "Паттерндердің жұмысы", live: "ТІКЕЛЕЙ",
-    patternsCaption: "Паттерндер қолданбаға қалай көмектесетінін көріңіз.", waitingEvents: "Паттерн оқиғалары күтілуде…",
     footerMade: "Білімге құштар жандарға", footerWords: "Күніне бір сөз", miniGameSelected: "ОЙЫН ТАҢДАЛДЫ",
     listenHintFull: "Сөзді тыңдап, аудармасын таңдаңыз.", pictureWordHintFull: "Суретке қараңыз. Қай сөз сәйкес келеді?",
     wordPictureHintFull: "Сөзді оқып, сәйкес суретті таңдаңыз.", translationHintFull: "Сөздің аудармасын енгізіңіз.",
@@ -115,7 +108,6 @@ const cardList = document.querySelector("#decorator-cards");
 const questionArea = document.querySelector("#question-area");
 const feedbackLine = document.querySelector("#feedback");
 const burst = document.querySelector("#star-burst");
-const patternList = document.querySelector("#pattern-list");
 let lessonData;
 let activeGame = "";
 let questionIndex = 0;
@@ -474,49 +466,6 @@ async function changeStrategy(event) {
   }
 }
 
-function patternTag(pattern) {
-  return pattern.split("[")[0];
-}
-
-function renderPatternEvents(events) {
-  const entries = events.map((event) => {
-    const item = document.createElement("li");
-    item.className = "pattern-event";
-    const meta = document.createElement("div");
-    meta.className = "event-meta";
-    const tag = document.createElement("span");
-    const pattern = patternTag(event.pattern);
-    tag.className = `pattern-tag tag-${pattern.toLowerCase()}`;
-    tag.textContent = pattern;
-    const time = document.createElement("time");
-    time.className = "event-time";
-    time.dateTime = event.occurredAt;
-    time.textContent = new Date(event.occurredAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" });
-    const message = document.createElement("p");
-    message.textContent = event.message;
-    meta.append(tag, time);
-    item.append(meta, message);
-    return item;
-  });
-  patternList.replaceChildren(...(entries.length ? entries : [emptyPatternMessage()]));
-}
-
-function emptyPatternMessage() {
-  const item = document.createElement("li");
-  item.className = "pattern-empty";
-  item.textContent = translate("waitingEvents");
-  return item;
-}
-
-async function refreshPatternEvents() {
-  try {
-    const events = await requestJson("/api/events");
-    renderPatternEvents(events);
-  } catch (error) {
-    patternList.replaceChildren(emptyPatternMessage());
-  }
-}
-
 async function loadLesson() {
   try {
     lessonData = await requestJson("/api/lesson");
@@ -524,7 +473,6 @@ async function loadLesson() {
     renderWords(lessonData.words);
     renderDecoratorCards(lessonData.cards);
     await refreshProgress();
-    await refreshPatternEvents();
   } catch (error) {
     document.querySelector("#lesson-title").textContent = translate("loadingError");
     document.querySelector("#game-instructions").textContent = error.message;
@@ -541,6 +489,5 @@ document.querySelector("#strategy-select").addEventListener("change", changeStra
 document.querySelectorAll("[data-decoration]").forEach((toggle) => {
   toggle.addEventListener("change", () => lessonData && renderDecoratorCards(lessonData.cards));
 });
-window.setInterval(refreshPatternEvents, PATTERN_EVENT_POLL_INTERVAL_MS);
 applyLanguage(currentLanguage);
 loadLesson();
